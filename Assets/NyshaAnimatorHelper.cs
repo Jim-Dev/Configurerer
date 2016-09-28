@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Animator))]
 public class NyshaAnimatorHelper : MonoBehaviour
 {
     public AnimatorOverrideController ExerciseOverride;
-
+    public AnimationCurve AnimCurve;
     /*
     public AnimatorOverrideController ExerciseOverride
     {
@@ -90,6 +91,29 @@ public class NyshaAnimatorHelper : MonoBehaviour
         }
     }
 
+    //----- IK
+
+    public Transform LeftFootIKTarget;
+    public Transform RightFootIKTarget;
+
+    public Transform LeftHandIKTarget;
+    public Transform RightHandIKTarget;
+
+    public Transform LeftFootIKPivot;
+    public Transform RightFootIKPivot;
+
+    public Transform LeftHandIKPivot;
+    public Transform RightHandIKPivot;
+
+    public float IKWeight;
+
+
+    //------ End IK
+
+
+
+
+
     // Use this for initialization
     void Start()
     {
@@ -99,6 +123,8 @@ public class NyshaAnimatorHelper : MonoBehaviour
         currentTransitionState = eTransitionState.None;
 
         currentTransitionState = eTransitionState.OnRestToExtreme;
+
+        AnimCurve = new AnimationCurve();
     }
 
     // Update is called once per frame
@@ -160,7 +186,30 @@ public class NyshaAnimatorHelper : MonoBehaviour
         Debug.Log(currentTransitionState);
     }
 
+    void OnAnimatorIK()
+    {
+        animator.SetIKPosition(AvatarIKGoal.LeftFoot, LeftFootIKTarget.position);
+        animator.SetIKPosition(AvatarIKGoal.RightFoot, RightFootIKTarget.position);
+        animator.SetIKPosition(AvatarIKGoal.LeftHand, LeftHandIKTarget.position);
+        animator.SetIKPosition(AvatarIKGoal.RightHand, RightHandIKTarget.position);
 
+        animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, IKWeight);
+        animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, IKWeight);
+        animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, IKWeight);
+        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, IKWeight);
+
+
+
+        animator.SetIKHintPosition(AvatarIKHint.LeftKnee, LeftFootIKPivot.position);
+        animator.SetIKHintPosition(AvatarIKHint.RightKnee, RightFootIKPivot.position);
+        animator.SetIKHintPosition(AvatarIKHint.LeftElbow, LeftHandIKPivot.position);
+        animator.SetIKHintPosition(AvatarIKHint.RightElbow, RightHandIKPivot.position);
+
+        animator.SetIKHintPositionWeight(AvatarIKHint.LeftKnee, IKWeight);
+        animator.SetIKHintPositionWeight(AvatarIKHint.RightKnee, IKWeight);
+        animator.SetIKHintPositionWeight(AvatarIKHint.LeftElbow, IKWeight);
+        animator.SetIKHintPositionWeight(AvatarIKHint.RightElbow, IKWeight);
+    }
     private void SetPublicMembers()
     {
         Transition = TransitionAlpha;
