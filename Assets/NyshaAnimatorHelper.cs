@@ -94,17 +94,19 @@ public class NyshaAnimatorHelper : MonoBehaviour
     //----- IK
     [Header("IK Controls")]
     [Space(5)]
+    public Transform HipsPosition;
+
     public Transform LeftFootIKTarget;
     public Transform RightFootIKTarget;
 
     public Transform LeftHandIKTarget;
     public Transform RightHandIKTarget;
 
-    public Transform LeftFootIKPivot;
-    public Transform RightFootIKPivot;
+    public Transform LeftFootIKPole;
+    public Transform RightFootIKPole;
 
-    public Transform LeftHandIKPivot;
-    public Transform RightHandIKPivot;
+    public Transform LeftHandIKPole;
+    public Transform RightHandIKPole;
 
     public Transform LookAtTarget;
     [Space(20)]
@@ -115,6 +117,40 @@ public class NyshaAnimatorHelper : MonoBehaviour
     [Range(0, 1)]
     public float IKBaseWeight;
 
+    [Space(5)]
+    [Range(0, 1)]
+    public float IKHandLeftPositionWeight;
+    [Range(0, 1)]
+    public float IKHandLeftRotationWeight;
+    [Range(0, 1)]
+    public float IKHandLeftPoleWeight;
+
+    [Space(5)]
+    [Range(0, 1)]
+    public float IKHandRightPositionWeight;
+    [Range(0, 1)]
+    public float IKHandRightRotationWeight;
+    [Range(0, 1)]
+    public float IKHandRightPoleWeight;
+
+    [Space(5)]
+    [Range(0, 1)]
+    public float IKFootLeftPositionWeight;
+    [Range(0, 1)]
+    public float IKFootLeftRotationWeight;
+    [Range(0, 1)]
+    public float IKFootLeftPoleWeight;
+
+    [Space(5)]
+    [Range(0, 1)]
+    public float IKFootRightPositionWeight;
+    [Range(0, 1)]
+    public float IKFootRightRotationWeight;
+    [Range(0, 1)]
+    public float IKFootRightPoleWeight;
+
+
+    [Space(10)]
     [Range(0, 1)]
     public float LookAtBaseWeight;
     [Range(0, 1)]
@@ -216,30 +252,38 @@ public class NyshaAnimatorHelper : MonoBehaviour
         animator.SetIKRotation(AvatarIKGoal.LeftHand, LeftHandIKTarget.rotation);
         animator.SetIKRotation(AvatarIKGoal.RightHand, RightHandIKTarget.rotation);
 
-        animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, IKBaseWeight);
-        animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, IKBaseWeight);
-        animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, IKBaseWeight);
-        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, IKBaseWeight);
+        animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, NormalizeIKWeight(IKFootLeftPositionWeight));
+        animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, NormalizeIKWeight(IKFootRightPositionWeight));
+        animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, NormalizeIKWeight(IKHandLeftPositionWeight));
+        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, NormalizeIKWeight(IKHandRightPositionWeight));
 
-        animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, IKBaseWeight);
-        animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, IKBaseWeight);
-        animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, IKBaseWeight);
-        animator.SetIKRotationWeight(AvatarIKGoal.RightHand, IKBaseWeight);
+        animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, NormalizeIKWeight(IKFootLeftRotationWeight));
+        animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, NormalizeIKWeight(IKFootRightRotationWeight));
+        animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, NormalizeIKWeight(IKHandLeftRotationWeight));
+        animator.SetIKRotationWeight(AvatarIKGoal.RightHand, NormalizeIKWeight(IKHandLeftRotationWeight));
 
 
-        animator.SetIKHintPosition(AvatarIKHint.LeftKnee, LeftFootIKPivot.position);
-        animator.SetIKHintPosition(AvatarIKHint.RightKnee, RightFootIKPivot.position);
-        animator.SetIKHintPosition(AvatarIKHint.LeftElbow, LeftHandIKPivot.position);
-        animator.SetIKHintPosition(AvatarIKHint.RightElbow, RightHandIKPivot.position);
+        animator.SetIKHintPosition(AvatarIKHint.LeftKnee, LeftFootIKPole.position);
+        animator.SetIKHintPosition(AvatarIKHint.RightKnee, RightFootIKPole.position);
+        animator.SetIKHintPosition(AvatarIKHint.LeftElbow, LeftHandIKPole.position);
+        animator.SetIKHintPosition(AvatarIKHint.RightElbow, RightHandIKPole.position);
 
-        animator.SetIKHintPositionWeight(AvatarIKHint.LeftKnee, IKBaseWeight);
-        animator.SetIKHintPositionWeight(AvatarIKHint.RightKnee, IKBaseWeight);
-        animator.SetIKHintPositionWeight(AvatarIKHint.LeftElbow, IKBaseWeight);
-        animator.SetIKHintPositionWeight(AvatarIKHint.RightElbow, IKBaseWeight);
+        animator.SetIKHintPositionWeight(AvatarIKHint.LeftKnee, NormalizeIKWeight(IKFootLeftPoleWeight));
+        animator.SetIKHintPositionWeight(AvatarIKHint.RightKnee, NormalizeIKWeight(IKFootRightPoleWeight));
+        animator.SetIKHintPositionWeight(AvatarIKHint.LeftElbow, NormalizeIKWeight(IKHandLeftPoleWeight));
+        animator.SetIKHintPositionWeight(AvatarIKHint.RightElbow, NormalizeIKWeight(IKHandLeftPoleWeight));
 
         animator.SetLookAtPosition(LookAtTarget.position);
         animator.SetLookAtWeight(LookAtBaseWeight,LookAtBodyWeight,LookAtHeadWeight,LookAtEyesWeight,LookAtClampWeight);
+
+        animator.SetBoneLocalRotation(HumanBodyBones.Hips, HipsPosition.localRotation);
     }
+
+    private float NormalizeIKWeight(float IKWeight)
+    {
+        return Mathf.Clamp01(IKBaseWeight + IKWeight);
+    }
+
     private void SetPublicMembers()
     {
         Transition = TransitionAlpha;
