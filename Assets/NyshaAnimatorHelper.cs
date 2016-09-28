@@ -3,8 +3,9 @@ using System.Collections;
 
 public class NyshaAnimatorHelper : MonoBehaviour
 {
-    private AnimatorOverrideController exerciseOverride;
+    public AnimatorOverrideController ExerciseOverride;
 
+    /*
     public AnimatorOverrideController ExerciseOverride
     {
         get { return this.exerciseOverride; }
@@ -13,7 +14,7 @@ public class NyshaAnimatorHelper : MonoBehaviour
             exerciseOverride = value;
             animator.runtimeAnimatorController = value;
         }
-    }
+    }*/
 
     private Animator animator;
     private float totalDeltaTime;
@@ -32,7 +33,9 @@ public class NyshaAnimatorHelper : MonoBehaviour
 
     int mirrorAnimHash = Animator.StringToHash("MirrorAnim");
 
-    private float TransitionAlpha
+    [SerializeField, SetProperty("TransitionAlpha")]
+    private float transitionAlpha = 0;
+    public float TransitionAlpha
     {
         get
         {
@@ -43,13 +46,21 @@ public class NyshaAnimatorHelper : MonoBehaviour
             animator.SetFloat(transitionAlphaHash, Mathf.Clamp01(value));
         }
     }
+    [SerializeField, SetProperty("TransitionTime")]
+    private float transitionTime=5;
     private float TransitionTime
     {
         get
         {
             return animator.GetFloat(transitionTimeHash);
         }
+        set
+        {
+            this.transitionTime = value;
+        }
     }
+
+    public float Transition = 0;
 
     private float OnRestTime
     {
@@ -58,6 +69,7 @@ public class NyshaAnimatorHelper : MonoBehaviour
             return animator.GetFloat(onRestTimeHash);
         }
     }
+
     private float OnExtremeTime
     {
         get
@@ -87,8 +99,6 @@ public class NyshaAnimatorHelper : MonoBehaviour
         currentTransitionState = eTransitionState.None;
 
         currentTransitionState = eTransitionState.OnRestToExtreme;
-
-
     }
 
     // Update is called once per frame
@@ -148,6 +158,12 @@ public class NyshaAnimatorHelper : MonoBehaviour
 
         Debug.Log(TransitionAlpha);
         Debug.Log(currentTransitionState);
+    }
+
+
+    private void SetPublicMembers()
+    {
+        Transition = TransitionAlpha;
     }
 
     private void SetAnimator()
