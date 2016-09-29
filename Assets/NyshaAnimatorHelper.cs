@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using Assets.Script.Excersice;
 [RequireComponent(typeof(Animator))]
 public class NyshaAnimatorHelper : MonoBehaviour
 {
+    public ExerciseDescriptor ExerciseDescriptor;
+
     public AnimatorOverrideController ExerciseOverride;
     public AnimationCurve AnimCurve;
     /*
@@ -33,6 +36,9 @@ public class NyshaAnimatorHelper : MonoBehaviour
     int onExtremeTimeHash = Animator.StringToHash("OnExtremeTime");
 
     int mirrorAnimHash = Animator.StringToHash("MirrorAnim");
+
+    Vector3 hipsOffset;
+    Vector3 chestOffset;
 
     [SerializeField, SetProperty("TransitionAlpha")]
     private float transitionAlpha = 0;
@@ -94,7 +100,8 @@ public class NyshaAnimatorHelper : MonoBehaviour
     //----- IK
     [Header("IK Controls")]
     [Space(5)]
-    public Transform HipsPosition;
+    public Transform HipsControl;
+    public Transform ChestControl;
 
     public Transform LeftFootIKTarget;
     public Transform RightFootIKTarget;
@@ -179,6 +186,8 @@ public class NyshaAnimatorHelper : MonoBehaviour
         currentTransitionState = eTransitionState.OnRestToExtreme;
 
         AnimCurve = new AnimationCurve();
+
+        hipsOffset = HipsControl.localPosition;
     }
 
     // Update is called once per frame
@@ -276,7 +285,13 @@ public class NyshaAnimatorHelper : MonoBehaviour
         animator.SetLookAtPosition(LookAtTarget.position);
         animator.SetLookAtWeight(LookAtBaseWeight,LookAtBodyWeight,LookAtHeadWeight,LookAtEyesWeight,LookAtClampWeight);
 
-        animator.SetBoneLocalRotation(HumanBodyBones.Hips, HipsPosition.localRotation);
+        gameObject.transform.position = HipsControl.position-hipsOffset;
+        animator.SetBoneLocalRotation(HumanBodyBones.Hips, HipsControl.localRotation);
+
+        ChestControl.position = animator.GetBoneTransform(HumanBodyBones.Chest).position;
+
+        animator.SetBoneLocalRotation(HumanBodyBones.Chest, ChestControl.localRotation);
+
     }
 
     private float NormalizeIKWeight(float IKWeight)
@@ -298,7 +313,8 @@ public class NyshaAnimatorHelper : MonoBehaviour
 
     private void OnRepFinished()
     {
-        
+
+
     }
 
     private enum eTransitionState
