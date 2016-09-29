@@ -5,10 +5,17 @@ using Assets.Script.Excersice;
 [RequireComponent(typeof(Animator))]
 public class NyshaAnimatorHelper : MonoBehaviour
 {
+    [Header("IK Reference Lines")]
+    [Space(5)]
+    public Color IKLineReferenceColor;
+    public bool DrawDebugReferenceLines=true;
+    public bool DrawGLReferenceLines;
+    [Space(10)]
     public ExerciseDescriptor ExerciseDescriptor;
 
     public AnimatorOverrideController ExerciseOverride;
     public AnimationCurve AnimCurve;
+    [Space(5)]
     /*
     public AnimatorOverrideController ExerciseOverride
     {
@@ -188,13 +195,21 @@ public class NyshaAnimatorHelper : MonoBehaviour
         AnimCurve = new AnimationCurve();
 
         hipsOffset = HipsControl.localPosition;
+
+      
+
+      
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
         SetAnimator();
-        
+        DrawDebugLines();
+        DrawReferenceLines();
+
         if (TransitionAlpha<=0 && currentTransitionState == eTransitionState.OnExtremeToRest)
         {
             totalDeltaTime = 0;
@@ -245,8 +260,8 @@ public class NyshaAnimatorHelper : MonoBehaviour
                 break;
         }
 
-        Debug.Log(TransitionAlpha);
-        Debug.Log(currentTransitionState);
+//        Debug.Log(TransitionAlpha);
+  //      Debug.Log(currentTransitionState);
     }
 
     void OnAnimatorIK()
@@ -292,12 +307,90 @@ public class NyshaAnimatorHelper : MonoBehaviour
 
         animator.SetBoneLocalRotation(HumanBodyBones.Chest, ChestControl.localRotation);
 
+
     }
 
     private float NormalizeIKWeight(float IKWeight)
     {
-        return Mathf.Clamp01(IKBaseWeight + IKWeight);
+        return Mathf.Clamp01(IKBaseWeight * IKWeight);
     }
+
+    private void DrawDebugLines()
+    {
+        if (DrawDebugReferenceLines)
+        {
+            Debug.DrawLine(LeftHandIKTarget.position, animator.GetBoneTransform(HumanBodyBones.LeftHand).position, IKLineReferenceColor);
+            Debug.DrawLine(RightHandIKTarget.position, animator.GetBoneTransform(HumanBodyBones.RightHand).position, IKLineReferenceColor);
+            Debug.DrawLine(LeftFootIKTarget.position, animator.GetBoneTransform(HumanBodyBones.LeftFoot).position, IKLineReferenceColor);
+            Debug.DrawLine(LeftFootIKTarget.position, animator.GetBoneTransform(HumanBodyBones.RightFoot).position, IKLineReferenceColor);
+
+
+            Debug.DrawLine(LeftHandIKPole.position, animator.GetBoneTransform(HumanBodyBones.LeftLowerArm).position, IKLineReferenceColor);
+            Debug.DrawLine(RightHandIKPole.position, animator.GetBoneTransform(HumanBodyBones.RightLowerArm).position, IKLineReferenceColor);
+            Debug.DrawLine(LeftFootIKPole.position, animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position, IKLineReferenceColor);
+            Debug.DrawLine(RightFootIKPole.position, animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position, IKLineReferenceColor);
+        }
+    }
+
+    private void DrawReferenceLines()
+    {
+
+
+        if (DrawGLReferenceLines)
+        {
+            GL.Begin(GL.LINES);
+            GL.Color(new Color(0, 1, 1));
+            GL.Vertex3(LeftHandIKTarget.position.x, LeftHandIKTarget.position.y, LeftHandIKTarget.position.z);
+            GL.Vertex3(
+                animator.GetBoneTransform(HumanBodyBones.LeftHand).position.x,
+                animator.GetBoneTransform(HumanBodyBones.LeftHand).position.y,
+                animator.GetBoneTransform(HumanBodyBones.LeftHand).position.z
+                );
+            GL.End();
+
+            GL.Begin(GL.LINES);
+            GL.Color(new Color(0, 1, 1));
+            GL.Vertex3(RightHandIKTarget.position.x, RightHandIKTarget.position.y, RightHandIKTarget.position.z);
+            GL.Vertex3(
+                animator.GetBoneTransform(HumanBodyBones.RightHand).position.x,
+                animator.GetBoneTransform(HumanBodyBones.RightHand).position.y,
+                animator.GetBoneTransform(HumanBodyBones.RightHand).position.z
+                );
+            GL.End();
+
+            GL.Begin(GL.LINES);
+            GL.Color(new Color(0, 1, 1));
+            GL.Vertex3(LeftFootIKTarget.position.x, LeftFootIKTarget.position.y, LeftFootIKTarget.position.z);
+            GL.Vertex3(
+                animator.GetBoneTransform(HumanBodyBones.LeftFoot).position.x,
+                animator.GetBoneTransform(HumanBodyBones.LeftFoot).position.y,
+                animator.GetBoneTransform(HumanBodyBones.LeftFoot).position.z
+                );
+            GL.End();
+
+            GL.Begin(GL.LINES);
+            GL.Color(new Color(0, 1, 1));
+            GL.Vertex3(RightFootIKTarget.position.x, RightFootIKTarget.position.y, RightFootIKTarget.position.z);
+            GL.Vertex3(
+                animator.GetBoneTransform(HumanBodyBones.RightFoot).position.x,
+                animator.GetBoneTransform(HumanBodyBones.RightFoot).position.y,
+                animator.GetBoneTransform(HumanBodyBones.RightFoot).position.z
+                );
+            GL.End();
+        }
+        
+    }
+    void OnPostRender()
+    {
+        DrawReferenceLines();
+    }
+
+    // To show the lines in the editor
+    void OnDrawGizmos()
+    {
+        DrawReferenceLines();
+    }
+   
 
     private void SetPublicMembers()
     {
