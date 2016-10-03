@@ -184,7 +184,6 @@ public class NyshaAnimatorHelper : MonoBehaviour
     private void OnRepFinished()
     {
 
-
     }
 
     private enum eTransitionState

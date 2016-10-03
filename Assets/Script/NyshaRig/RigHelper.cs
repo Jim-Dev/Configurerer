@@ -26,24 +26,8 @@ namespace Assets.Script.NyshaRig
         //----- IK
         [Header("IK Controls")]
         [Space(5)]
-        public Transform HipsControl;
-        public Transform ChestControl;
-
-        public Transform LeftFootIKTarget;
-        public Transform RightFootIKTarget;
-
-        public Transform LeftHandIKTarget;
-        public Transform RightHandIKTarget;
-
-        public Transform LeftFootIKPole;
-        public Transform RightFootIKPole;
-
-        public Transform LeftHandIKPole;
-        public Transform RightHandIKPole;
-
-        public Transform LookAtTarget;
+        public RigSetup RigSetup;
         [Space(20)]
-
 
         [Header("Inverse Kinematics Weights")]
         [Space(5)]
@@ -102,27 +86,29 @@ namespace Assets.Script.NyshaRig
         void Start()
         {
             animator = GetComponent<Animator>();
-            hipsOffset = HipsControl.localPosition;
+            hipsOffset = RigSetup.HipsControl.localPosition;
 
         }
 
         // Update is called once per frame
         void Update()
         {
-            LookAtTarget.GetComponent<Renderer>().enabled = RenderOnGame;
-            ChestControl.GetComponent<Renderer>().enabled = RenderOnGame;
-            HipsControl.GetComponent<Renderer>().enabled = RenderOnGame;
-           
+            RigSetup.LookAtTarget.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.HeadControl.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.NeckControl.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.ChestControl.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.HipsControl.GetComponent<Renderer>().enabled = RenderOnGame;
 
-            LeftFootIKTarget.GetComponent<Renderer>().enabled = RenderOnGame;
-            RightFootIKTarget.GetComponent<Renderer>().enabled = RenderOnGame;
-            LeftHandIKTarget.GetComponent<Renderer>().enabled = RenderOnGame;
-            RightHandIKTarget.GetComponent<Renderer>().enabled = RenderOnGame;
 
-            LeftFootIKPole.GetComponent<Renderer>().enabled = RenderOnGame;
-            RightFootIKPole.GetComponent<Renderer>().enabled = RenderOnGame;
-            LeftHandIKPole.GetComponent<Renderer>().enabled = RenderOnGame;
-            RightHandIKPole.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.LeftFootIKTarget.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.RightFootIKTarget.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.LeftHandIKTarget.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.RightHandIKTarget.GetComponent<Renderer>().enabled = RenderOnGame;
+
+            RigSetup.LeftFootIKPole.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.RightFootIKPole.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.LeftHandIKPole.GetComponent<Renderer>().enabled = RenderOnGame;
+            RigSetup.RightHandIKPole.GetComponent<Renderer>().enabled = RenderOnGame;
             
 
             if (RenderOnGame)
@@ -135,15 +121,15 @@ namespace Assets.Script.NyshaRig
 
         void OnAnimatorIK()
         {
-            animator.SetIKPosition(AvatarIKGoal.LeftFoot, LeftFootIKTarget.position);
-            animator.SetIKPosition(AvatarIKGoal.RightFoot, RightFootIKTarget.position);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, LeftHandIKTarget.position);
-            animator.SetIKPosition(AvatarIKGoal.RightHand, RightHandIKTarget.position);
+            animator.SetIKPosition(AvatarIKGoal.LeftFoot, RigSetup.LeftFootIKTarget.position);
+            animator.SetIKPosition(AvatarIKGoal.RightFoot, RigSetup.RightFootIKTarget.position);
+            animator.SetIKPosition(AvatarIKGoal.LeftHand, RigSetup.LeftHandIKTarget.position);
+            animator.SetIKPosition(AvatarIKGoal.RightHand, RigSetup.RightHandIKTarget.position);
 
-            animator.SetIKRotation(AvatarIKGoal.LeftFoot, LeftFootIKTarget.rotation);
-            animator.SetIKRotation(AvatarIKGoal.RightFoot, RightFootIKTarget.rotation);
-            animator.SetIKRotation(AvatarIKGoal.LeftHand, LeftHandIKTarget.rotation);
-            animator.SetIKRotation(AvatarIKGoal.RightHand, RightHandIKTarget.rotation);
+            animator.SetIKRotation(AvatarIKGoal.LeftFoot, RigSetup.LeftFootIKTarget.rotation);
+            animator.SetIKRotation(AvatarIKGoal.RightFoot, RigSetup.RightFootIKTarget.rotation);
+            animator.SetIKRotation(AvatarIKGoal.LeftHand, RigSetup.LeftHandIKTarget.rotation);
+            animator.SetIKRotation(AvatarIKGoal.RightHand, RigSetup.RightHandIKTarget.rotation);
 
             animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, NormalizeIKWeight(IKFootLeftPositionWeight));
             animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, NormalizeIKWeight(IKFootRightPositionWeight));
@@ -156,25 +142,30 @@ namespace Assets.Script.NyshaRig
             animator.SetIKRotationWeight(AvatarIKGoal.RightHand, NormalizeIKWeight(IKHandLeftRotationWeight));
 
 
-            animator.SetIKHintPosition(AvatarIKHint.LeftKnee, LeftFootIKPole.position);
-            animator.SetIKHintPosition(AvatarIKHint.RightKnee, RightFootIKPole.position);
-            animator.SetIKHintPosition(AvatarIKHint.LeftElbow, LeftHandIKPole.position);
-            animator.SetIKHintPosition(AvatarIKHint.RightElbow, RightHandIKPole.position);
+            animator.SetIKHintPosition(AvatarIKHint.LeftKnee, RigSetup.LeftFootIKPole.position);
+            animator.SetIKHintPosition(AvatarIKHint.RightKnee, RigSetup.RightFootIKPole.position);
+            animator.SetIKHintPosition(AvatarIKHint.LeftElbow, RigSetup.LeftHandIKPole.position);
+            animator.SetIKHintPosition(AvatarIKHint.RightElbow, RigSetup.RightHandIKPole.position);
 
             animator.SetIKHintPositionWeight(AvatarIKHint.LeftKnee, NormalizeIKWeight(IKFootLeftPoleWeight));
             animator.SetIKHintPositionWeight(AvatarIKHint.RightKnee, NormalizeIKWeight(IKFootRightPoleWeight));
             animator.SetIKHintPositionWeight(AvatarIKHint.LeftElbow, NormalizeIKWeight(IKHandLeftPoleWeight));
             animator.SetIKHintPositionWeight(AvatarIKHint.RightElbow, NormalizeIKWeight(IKHandLeftPoleWeight));
 
-            animator.SetLookAtPosition(LookAtTarget.position);
+            animator.SetLookAtPosition(RigSetup.LookAtTarget.position);
             animator.SetLookAtWeight(LookAtBaseWeight, LookAtBodyWeight, LookAtHeadWeight, LookAtEyesWeight, LookAtClampWeight);
 
-            gameObject.transform.position = HipsControl.position - hipsOffset;
-            animator.SetBoneLocalRotation(HumanBodyBones.Hips, HipsControl.localRotation);
+            gameObject.transform.position = RigSetup.HipsControl.position - hipsOffset;
+            animator.SetBoneLocalRotation(HumanBodyBones.Hips, RigSetup.HipsControl.localRotation);
 
-            ChestControl.position = animator.GetBoneTransform(HumanBodyBones.Chest).position;
-            animator.SetBoneLocalRotation(HumanBodyBones.Chest, ChestControl.localRotation);
+            RigSetup.ChestControl.position = animator.GetBoneTransform(HumanBodyBones.Chest).position;
+            animator.SetBoneLocalRotation(HumanBodyBones.Chest, RigSetup.ChestControl.localRotation);
 
+            RigSetup.HeadControl.position = animator.GetBoneTransform(HumanBodyBones.Head).position;
+            animator.SetBoneLocalRotation(HumanBodyBones.Head, RigSetup.HeadControl.localRotation);
+
+            RigSetup.NeckControl.position = animator.GetBoneTransform(HumanBodyBones.Neck).position;
+            animator.SetBoneLocalRotation(HumanBodyBones.Neck, RigSetup.NeckControl.localRotation);
 
         }
 
@@ -188,16 +179,16 @@ namespace Assets.Script.NyshaRig
         {
             if (DrawDebugReferenceLines)
             {
-                Debug.DrawLine(LeftHandIKTarget.position, animator.GetBoneTransform(HumanBodyBones.LeftHand).position, IKLineReferenceColor);
-                Debug.DrawLine(RightHandIKTarget.position, animator.GetBoneTransform(HumanBodyBones.RightHand).position, IKLineReferenceColor);
-                Debug.DrawLine(LeftFootIKTarget.position, animator.GetBoneTransform(HumanBodyBones.LeftFoot).position, IKLineReferenceColor);
-                Debug.DrawLine(LeftFootIKTarget.position, animator.GetBoneTransform(HumanBodyBones.RightFoot).position, IKLineReferenceColor);
+                Debug.DrawLine(RigSetup.LeftHandIKTarget.position, animator.GetBoneTransform(HumanBodyBones.LeftHand).position, IKLineReferenceColor);
+                Debug.DrawLine(RigSetup.RightHandIKTarget.position, animator.GetBoneTransform(HumanBodyBones.RightHand).position, IKLineReferenceColor);
+                Debug.DrawLine(RigSetup.LeftFootIKTarget.position, animator.GetBoneTransform(HumanBodyBones.LeftFoot).position, IKLineReferenceColor);
+                Debug.DrawLine(RigSetup.RightFootIKTarget.position, animator.GetBoneTransform(HumanBodyBones.RightFoot).position, IKLineReferenceColor);
 
 
-                Debug.DrawLine(LeftHandIKPole.position, animator.GetBoneTransform(HumanBodyBones.LeftLowerArm).position, IKLineReferenceColor);
-                Debug.DrawLine(RightHandIKPole.position, animator.GetBoneTransform(HumanBodyBones.RightLowerArm).position, IKLineReferenceColor);
-                Debug.DrawLine(LeftFootIKPole.position, animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position, IKLineReferenceColor);
-                Debug.DrawLine(RightFootIKPole.position, animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position, IKLineReferenceColor);
+                Debug.DrawLine(RigSetup.LeftHandIKPole.position, animator.GetBoneTransform(HumanBodyBones.LeftLowerArm).position, IKLineReferenceColor);
+                Debug.DrawLine(RigSetup.RightHandIKPole.position, animator.GetBoneTransform(HumanBodyBones.RightLowerArm).position, IKLineReferenceColor);
+                Debug.DrawLine(RigSetup.LeftFootIKPole.position, animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position, IKLineReferenceColor);
+                Debug.DrawLine(RigSetup.RightFootIKPole.position, animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position, IKLineReferenceColor);
             }
         }
 
@@ -209,7 +200,7 @@ namespace Assets.Script.NyshaRig
             {
                 GL.Begin(GL.LINES);
                 GL.Color(new Color(0, 1, 1));
-                GL.Vertex3(LeftHandIKTarget.position.x, LeftHandIKTarget.position.y, LeftHandIKTarget.position.z);
+                GL.Vertex3(RigSetup.LeftHandIKTarget.position.x, RigSetup.LeftHandIKTarget.position.y, RigSetup.LeftHandIKTarget.position.z);
                 GL.Vertex3(
                     animator.GetBoneTransform(HumanBodyBones.LeftHand).position.x,
                     animator.GetBoneTransform(HumanBodyBones.LeftHand).position.y,
@@ -219,7 +210,7 @@ namespace Assets.Script.NyshaRig
 
                 GL.Begin(GL.LINES);
                 GL.Color(new Color(0, 1, 1));
-                GL.Vertex3(RightHandIKTarget.position.x, RightHandIKTarget.position.y, RightHandIKTarget.position.z);
+                GL.Vertex3(RigSetup.RightHandIKTarget.position.x, RigSetup.RightHandIKTarget.position.y, RigSetup.RightHandIKTarget.position.z);
                 GL.Vertex3(
                     animator.GetBoneTransform(HumanBodyBones.RightHand).position.x,
                     animator.GetBoneTransform(HumanBodyBones.RightHand).position.y,
@@ -229,7 +220,7 @@ namespace Assets.Script.NyshaRig
 
                 GL.Begin(GL.LINES);
                 GL.Color(new Color(0, 1, 1));
-                GL.Vertex3(LeftFootIKTarget.position.x, LeftFootIKTarget.position.y, LeftFootIKTarget.position.z);
+                GL.Vertex3(RigSetup.LeftFootIKTarget.position.x, RigSetup.LeftFootIKTarget.position.y, RigSetup.LeftFootIKTarget.position.z);
                 GL.Vertex3(
                     animator.GetBoneTransform(HumanBodyBones.LeftFoot).position.x,
                     animator.GetBoneTransform(HumanBodyBones.LeftFoot).position.y,
@@ -239,7 +230,7 @@ namespace Assets.Script.NyshaRig
 
                 GL.Begin(GL.LINES);
                 GL.Color(new Color(0, 1, 1));
-                GL.Vertex3(RightFootIKTarget.position.x, RightFootIKTarget.position.y, RightFootIKTarget.position.z);
+                GL.Vertex3(RigSetup.RightFootIKTarget.position.x, RigSetup.RightFootIKTarget.position.y, RigSetup.RightFootIKTarget.position.z);
                 GL.Vertex3(
                     animator.GetBoneTransform(HumanBodyBones.RightFoot).position.x,
                     animator.GetBoneTransform(HumanBodyBones.RightFoot).position.y,
@@ -260,5 +251,21 @@ namespace Assets.Script.NyshaRig
             DrawReferenceLines();
         }
 
+
+        public string ToJson()
+        {
+            return ToJson(true);
+        }
+        public string ToJson(bool prettyPrint)
+        {
+            return JsonUtility.ToJson(this, prettyPrint);
+        }
+
+        /*
+        public ExerciseDescriptor FromJson(string JsonString)
+        {
+            return JsonUtility.FromJson<ExerciseDescriptor>(JsonString);
+        }
+        */
     }
 }
