@@ -136,9 +136,9 @@ namespace Assets.Script
             rigPose.LeftFootIKPole.Rotation = Quaternion.Lerp(A.LeftFootIKPole.Rotation, B.LeftFootIKPole.Rotation, Alpha);
             rigPose.LeftFootIKPole.Scale = Vector3.Lerp(A.LeftFootIKPole.Scale, B.LeftFootIKPole.Scale, Alpha);
 
-            rigPose.LeftFootIKPole.Position = Vector3.Lerp(A.LeftFootIKPole.Position, B.LeftFootIKPole.Position, Alpha);
-            rigPose.LeftFootIKPole.Rotation = Quaternion.Lerp(A.LeftFootIKPole.Rotation, B.LeftFootIKPole.Rotation, Alpha);
-            rigPose.LeftFootIKPole.Scale = Vector3.Lerp(A.LeftFootIKPole.Scale, B.LeftFootIKPole.Scale, Alpha);
+            rigPose.RightFootIKPole.Position = Vector3.Lerp(A.RightFootIKPole.Position, B.RightFootIKPole.Position, Alpha);
+            rigPose.RightFootIKPole.Rotation = Quaternion.Lerp(A.RightFootIKPole.Rotation, B.RightFootIKPole.Rotation, Alpha);
+            rigPose.RightFootIKPole.Scale = Vector3.Lerp(A.RightFootIKPole.Scale, B.RightFootIKPole.Scale, Alpha);
 
 
             return rigPose;
