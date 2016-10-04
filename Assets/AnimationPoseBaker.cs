@@ -57,16 +57,8 @@ public class AnimationPoseBaker : MonoBehaviour
     public void SaveItemInfo()
     {
         string assetPath = string.Empty;
-        string dependantPath = string.Empty;
 
-#if UNITY_EDITOR
-        dependantPath = "Assets/Resources/Animations/NewPoses/";
-#endif
-
-#if UNITY_STANDALONE
-        dependantPath = "Assets/Animations/NewPoses/";
-#endif
-        assetPath = string.Format(@"{0}{1}.json", dependantPath, rigPose.PoseName);
+        assetPath = string.Format(@"{0}{1}.json", RigPose.PosesPath, rigPose.PoseName);
         using (FileStream fs = new FileStream(assetPath, FileMode.Create))
         {
             using (StreamWriter writer = new StreamWriter(fs))

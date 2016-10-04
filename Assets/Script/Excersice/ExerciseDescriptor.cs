@@ -24,6 +24,8 @@ namespace Assets.Script.Excersice
 
         public bool AlternateMirroring;
 
+        public RigPose[] ExercisePoses;
+
         public string ToJson()
         {
             return ToJson(true);

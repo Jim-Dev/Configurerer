@@ -139,7 +139,7 @@ namespace Assets.Script.NyshaRig
             animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, NormalizeIKWeight(IKFootLeftRotationWeight));
             animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, NormalizeIKWeight(IKFootRightRotationWeight));
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, NormalizeIKWeight(IKHandLeftRotationWeight));
-            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, NormalizeIKWeight(IKHandLeftRotationWeight));
+            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, NormalizeIKWeight(IKHandRightRotationWeight));
 
 
             animator.SetIKHintPosition(AvatarIKHint.LeftKnee, RigSetup.LeftFootIKPole.position);
@@ -150,7 +150,7 @@ namespace Assets.Script.NyshaRig
             animator.SetIKHintPositionWeight(AvatarIKHint.LeftKnee, NormalizeIKWeight(IKFootLeftPoleWeight));
             animator.SetIKHintPositionWeight(AvatarIKHint.RightKnee, NormalizeIKWeight(IKFootRightPoleWeight));
             animator.SetIKHintPositionWeight(AvatarIKHint.LeftElbow, NormalizeIKWeight(IKHandLeftPoleWeight));
-            animator.SetIKHintPositionWeight(AvatarIKHint.RightElbow, NormalizeIKWeight(IKHandLeftPoleWeight));
+            animator.SetIKHintPositionWeight(AvatarIKHint.RightElbow, NormalizeIKWeight(IKHandRightPoleWeight));
 
             animator.SetLookAtPosition(RigSetup.LookAtTarget.position);
             animator.SetLookAtWeight(LookAtBaseWeight, LookAtBodyWeight, LookAtHeadWeight, LookAtEyesWeight, LookAtClampWeight);
