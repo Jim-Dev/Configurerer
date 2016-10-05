@@ -43,7 +43,7 @@ namespace Assets.Script.Excersice
                 case eTransitionState.None:
                     break;
                 case eTransitionState.OnRest:
-                    Debug.Log("OnRest");
+                    //Debug.Log("OnRest");
                     totalDeltaTime += Time.deltaTime;
                     if (totalDeltaTime >= WaitTimeOnRest)
                     {
@@ -62,7 +62,7 @@ namespace Assets.Script.Excersice
                     TransitionAlpha = totalDeltaTime / TransitionTimeRestToExtreme;
                     break;
                 case eTransitionState.OnExtreme:
-                    Debug.Log("OnExtreme");
+                    //Debug.Log("OnExtreme");
                     totalDeltaTime += Time.deltaTime;
                     if (totalDeltaTime >= WaitTimeOnExtreme)
                     {

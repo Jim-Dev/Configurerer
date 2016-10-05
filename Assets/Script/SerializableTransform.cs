@@ -64,5 +64,16 @@ public static SerializableTransform Empty()
                 transform.rotation,
                 transform.localScale);
         }
+
+        public static SerializableTransform Lerp(SerializableTransform A,SerializableTransform B,float Alpha)
+        {
+            SerializableTransform output = new SerializableTransform();
+
+            output.Position= Vector3.Lerp(A.Position, B.Position, Alpha);
+            output.Rotation = Quaternion.Lerp(A.Rotation, B.Rotation, Alpha);
+            output.Scale = Vector3.Lerp(A.Scale, B.Scale, Alpha);
+
+            return output;
+        }
     }
 }
