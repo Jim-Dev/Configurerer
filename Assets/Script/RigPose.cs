@@ -78,7 +78,7 @@ namespace Assets.Script
             rigPose.RightFootIKTarget = rig.RightFootIKTarget.transform;
 
             rigPose.LeftFootIKPole = rig.LeftFootIKPole.transform;
-            rigPose.LeftFootIKPole = rig.LeftFootIKPole.transform;
+            rigPose.RightFootIKPole = rig.RightFootIKPole.transform;
 
             return rigPose;
         }

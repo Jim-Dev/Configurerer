@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Assets.Script
 {
     [Serializable]
-    public class RigSetup
+    public class RigSetup:MonoBehaviour
     {
         //----- IK
         [Header("IK Controls")]

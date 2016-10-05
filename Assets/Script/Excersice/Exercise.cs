@@ -37,6 +37,8 @@ namespace Assets.Script.Excersice
         //------
 
 
+        protected RigSetup Rig;
+
         public bool LoadPoseFromAsset(string poseName)
         {
             if (File.Exists(string.Format("{0}{1}.json",RigPose.PosesPath, poseName)))
@@ -59,6 +61,16 @@ namespace Assets.Script.Excersice
                 }
             }
             return output;
+        }
+
+        public void Start()
+        {
+            Rig = GetComponentInParent<RigSetup>();
+        }
+
+        public Exercise()
+        {
+         
         }
 
     }

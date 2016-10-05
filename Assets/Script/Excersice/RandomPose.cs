@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Assets.Script.Excersice
 {
-    public class Burpee : Exercise
+    public class RandomPose : Exercise
     {
 
         private float totalDeltaTime;
@@ -16,6 +16,7 @@ namespace Assets.Script.Excersice
 
         public int selectedPoseIndex = 0;
 
+
         public RigPose CurrentPose;
 
         public int[] PoseSeries;
@@ -23,7 +24,7 @@ namespace Assets.Script.Excersice
         {
             if (TransitionAlpha >= TransitionThreshold )
             {
-                if (selectedPoseIndex == 7)
+                if (selectedPoseIndex == 9)
                     selectedPoseIndex = -1;
                 Debug.Log("ReachExtreme");
                 totalDeltaTime = 0;
@@ -43,29 +44,30 @@ namespace Assets.Script.Excersice
         {
             base.Start();
 
+
             WaitTimeWarmUp = 2;
             WaitTimeOnRest = 3;
             WaitTimeOnExtreme = 5;
 
             TransitionTimeExtremeToRest = 5;
-            TransitionTimeRestToExtreme = 1;
+            TransitionTimeRestToExtreme = 5;
 
             ExercisePoses = new List<RigPose>();
-            LoadPoseFromAsset("Burpee01");
-            LoadPoseFromAsset("Burpee02");
-            LoadPoseFromAsset("Burpee03");
-            LoadPoseFromAsset("Burpee04");
-            LoadPoseFromAsset("Burpee07");
-            PoseSeries = new int[9];
+            LoadPoseFromAsset("DancerLeg.R");
+            LoadPoseFromAsset("TouchFoot.R");
+            LoadPoseFromAsset("TouchFootSide.R");
+            LoadPoseFromAsset("TouchNose.R");
+            PoseSeries = new int[10];
             PoseSeries[0] = 0;
-            PoseSeries[1] = 1;
-            PoseSeries[2] = 2;
-            PoseSeries[3] = 3;
-            PoseSeries[4] = 2;
-            PoseSeries[5] = 1;
-            PoseSeries[6] = 0;
-            PoseSeries[7] = 4;
-            PoseSeries[8] = 0;
+            PoseSeries[1] = 2;
+            PoseSeries[2] = 1;
+            PoseSeries[3] = 2;
+            PoseSeries[4] = 3;
+            PoseSeries[5] = 0;
+            PoseSeries[6] = 1;
+            PoseSeries[7] = 2;
+            PoseSeries[8] = 3;
+            PoseSeries[9] = 0;
             selectedPoseIndex = 1;
             CurrentPose = RigPose.FromRig(Rig);
 

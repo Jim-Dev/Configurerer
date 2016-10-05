@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Script.NyshaRig
 {
-    public class RigHelper : MonoBehaviour
+    public class RigConfigurator : MonoBehaviour
     {
 
         private Animator animator;
@@ -23,11 +23,9 @@ namespace Assets.Script.NyshaRig
         public bool DrawGLReferenceLines;
         [Space(10)]
 
-        //----- IK
-        [Header("IK Controls")]
-        [Space(5)]
-        public RigSetup RigSetup;
-        [Space(20)]
+
+        private RigSetup RigSetup;
+        //[Space(10)]
 
         [Header("Inverse Kinematics Weights")]
         [Space(5)]
@@ -85,8 +83,10 @@ namespace Assets.Script.NyshaRig
         // Use this for initialization
         void Start()
         {
-            animator = GetComponent<Animator>();
+            animator = GetComponentInChildren<Animator>();
+            RigSetup = GetComponentInChildren<RigSetup>();
             hipsOffset = RigSetup.HipsControl.localPosition;
+            
 
         }
 

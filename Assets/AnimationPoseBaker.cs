@@ -6,7 +6,7 @@ using Assets.Script.Excersice;
 using Assets.Script;
 
 using System.IO;
-
+//[RequireComponent(typeof(RigSetup))]
 public class AnimationPoseBaker : MonoBehaviour
 {
     [Header("Pose Parameters")]
@@ -23,13 +23,11 @@ public class AnimationPoseBaker : MonoBehaviour
     public string FromJsonPose;
     [Space(10)]
     public RigSetup Rig;
-
     private RigPose rigPose;
-    
     // Use this for initialization
     void Start()
     {
-
+        Rig = GetComponentInChildren<RigSetup>();
     }
 
     // Update is called once per frame

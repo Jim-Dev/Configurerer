@@ -16,8 +16,6 @@ namespace Assets.Script.Excersice
 
         public int selectedPoseIndex = 0;
 
-
-        public RigSetup Rig;
         public RigPose CurrentPose;
         
         public void Update()
@@ -91,6 +89,7 @@ namespace Assets.Script.Excersice
         
         public void Start()
         {
+            base.Start();
             WaitTimeWarmUp = 2;
             WaitTimeOnRest = 3;
             WaitTimeOnExtreme = 5;
@@ -103,6 +102,7 @@ namespace Assets.Script.Excersice
             LoadPoseFromAsset("APose");
 
             selectedPoseIndex = 1;
+            //Rig = GetComponent<RigSetup>();
             CurrentPose = RigPose.FromRig(Rig);
 
             totalDeltaTime = 0;
@@ -111,6 +111,7 @@ namespace Assets.Script.Excersice
 
             currentTransitionState = eTransitionState.OnRestToExtreme;
 
+            
         }
 
         private enum eTransitionState
