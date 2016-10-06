@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-using Assets.Script.Excersice;
+using Assets.Script.NyshaRig.Excersice;
 [RequireComponent(typeof(Animator))]
 public class NyshaAnimatorHelper : MonoBehaviour
 {

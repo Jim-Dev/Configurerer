@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
-namespace Assets.Script
+namespace Assets.Script.NyshaRig
 {
     [Serializable]
     public class RigSetup:MonoBehaviour
@@ -12,11 +12,16 @@ namespace Assets.Script
         //----- IK
         [Header("IK Controls")]
         [Space(5)]
+
+        public Transform RootControl;
+        public Transform SKRoot;
+        public Transform CenterOfMass;
         public Transform LookAtTarget;
         public Transform HeadControl;
         public Transform NeckControl;
         public Transform ChestControl;
         public Transform HipsControl;
+        
 
         public Transform LeftHandIKTarget;
         public Transform RightHandIKTarget;
@@ -35,7 +40,13 @@ namespace Assets.Script
 
 
 
-            LookAtTarget.transform.position = pose.LookAtTarget.Position;
+            RootControl.transform.position = pose.RootControl.Position;
+            RootControl.transform.rotation = pose.RootControl.Rotation;
+            RootControl.transform.localScale = pose.RootControl.Scale;
+
+            CenterOfMass.transform.position = pose.CenterOfMass.Position;
+            CenterOfMass.transform.rotation = pose.CenterOfMass.Rotation;
+            CenterOfMass.transform.localScale = pose.CenterOfMass.Scale;
 
             LookAtTarget.transform.position = pose.LookAtTarget.Position;
             LookAtTarget.transform.rotation = pose.LookAtTarget.Rotation;

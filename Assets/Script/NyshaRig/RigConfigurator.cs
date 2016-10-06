@@ -9,9 +9,11 @@ namespace Assets.Script.NyshaRig
 {
     public class RigConfigurator : MonoBehaviour
     {
+        public bool IKToFK = false;
 
-        private Animator animator;
-        private Vector3 hipsOffset;
+        public Animator animator;
+        public Vector3 hipsOffset;
+        public Vector3 centerOfMassOffset;
         private Vector3 chestOffset;
 
         public bool RenderOnGame = false;
@@ -24,7 +26,7 @@ namespace Assets.Script.NyshaRig
         [Space(10)]
 
 
-        private RigSetup RigSetup;
+        public RigSetup RigSetup;
         //[Space(10)]
 
         [Header("Inverse Kinematics Weights")]
@@ -83,11 +85,12 @@ namespace Assets.Script.NyshaRig
         // Use this for initialization
         void Start()
         {
-            animator = GetComponentInChildren<Animator>();
-            RigSetup = GetComponentInChildren<RigSetup>();
+            animator = GetComponent<Animator>();
+            //RigSetup = GetComponentInChildren<RigSetup>();
+            RigSetup = GetComponentInParent<RigSetup>();
             hipsOffset = RigSetup.HipsControl.localPosition;
-            
-
+            centerOfMassOffset = RigSetup.CenterOfMass.localPosition;
+            //
         }
 
         // Update is called once per frame
@@ -116,6 +119,28 @@ namespace Assets.Script.NyshaRig
                 DrawDebugLines();
                 DrawReferenceLines();
             }
+
+            if (IKToFK)
+            {
+                IKToFK = false;
+
+                Vector3 tmpLookAtPos = RigSetup.LookAtTarget.position;
+
+                RigSetup.ChestControl.position = animator.GetBoneTransform(HumanBodyBones.Chest).position;
+                RigSetup.ChestControl.rotation = animator.GetBoneTransform(HumanBodyBones.Chest).rotation;
+                RigSetup.LookAtTarget.position = tmpLookAtPos;
+                RigSetup.HeadControl.position = animator.GetBoneTransform(HumanBodyBones.Head).position;
+                RigSetup.HeadControl.rotation = animator.GetBoneTransform(HumanBodyBones.Head).rotation;
+                RigSetup.LookAtTarget.position = tmpLookAtPos;
+
+                RigSetup.NeckControl.position = animator.GetBoneTransform(HumanBodyBones.Neck).position;
+                RigSetup.NeckControl.rotation = animator.GetBoneTransform(HumanBodyBones.Neck).rotation;
+
+                RigSetup.LookAtTarget.position = tmpLookAtPos;
+            }
+
+            hipsOffset = RigSetup.HipsControl.localPosition;
+            
         }
 
 
@@ -155,18 +180,28 @@ namespace Assets.Script.NyshaRig
             animator.SetLookAtPosition(RigSetup.LookAtTarget.position);
             animator.SetLookAtWeight(LookAtBaseWeight, LookAtBodyWeight, LookAtHeadWeight, LookAtEyesWeight, LookAtClampWeight);
 
-            gameObject.transform.position = RigSetup.HipsControl.position - hipsOffset;
-            animator.SetBoneLocalRotation(HumanBodyBones.Hips, RigSetup.HipsControl.localRotation);
+            //RigSetup.SKRoot.position = RigSetup. .position - hipsOffset;//RigSetup.RootControl.position;
 
-            RigSetup.ChestControl.position = animator.GetBoneTransform(HumanBodyBones.Chest).position;
-            animator.SetBoneLocalRotation(HumanBodyBones.Chest, RigSetup.ChestControl.localRotation);
+            RigSetup.SKRoot.localPosition = RigSetup.CenterOfMass.localPosition-centerOfMassOffset;
 
-            RigSetup.HeadControl.position = animator.GetBoneTransform(HumanBodyBones.Head).position;
-            animator.SetBoneLocalRotation(HumanBodyBones.Head, RigSetup.HeadControl.localRotation);
+            //gameObject.transform.position = RigSetup.HipsControl.position - hipsOffset;
+            //RigSetup.RootControl.position = RigSetup.HipsControl.position - hipsOffset;
+            //gameObject.transform.localPosition = RigSetup.HipsControl.localPosition - hipsOffset;
+            //gameObject.transform.position = RigSetup.RootControl.position;
+            //animator.SetBoneLocalRotation(HumanBodyBones.Hips, RigSetup.HipsControl.localRotation);
 
-            RigSetup.NeckControl.position = animator.GetBoneTransform(HumanBodyBones.Neck).position;
-            animator.SetBoneLocalRotation(HumanBodyBones.Neck, RigSetup.NeckControl.localRotation);
+            //RigSetup.ChestControl.localPosition = animator.GetBoneTransform(HumanBodyBones.Chest).localPosition;
+            //animator.SetBoneLocalRotation(HumanBodyBones.Chest, RigSetup.ChestControl.localRotation);
 
+            //RigSetup.HeadControl.localPosition = animator.GetBoneTransform(HumanBodyBones.Head).localPosition;
+            //animator.SetBoneLocalRotation(HumanBodyBones.Head, RigSetup.HeadControl.localRotation);
+
+            //RigSetup.NeckControl.localPosition = animator.GetBoneTransform(HumanBodyBones.Neck).localPosition;
+            //animator.SetBoneLocalRotation(HumanBodyBones.Neck, RigSetup.NeckControl.localRotation);
+            //gameObject.transform.position = RigSetup.RootControl.position;
+            //gameObject.transform.rotation = RigSetup.RootControl.rotation;
+
+            //gameObject.transform.position = RigSetup.RootControl.position;
         }
 
         private float NormalizeIKWeight(float IKWeight)

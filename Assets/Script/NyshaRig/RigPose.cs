@@ -5,7 +5,7 @@ using System.Text;
 
 using UnityEngine;
 
-namespace Assets.Script
+namespace Assets.Script.NyshaRig
 {
     [Serializable]
     public class RigPose
@@ -25,6 +25,14 @@ namespace Assets.Script
         }
 
         public string PoseName;
+
+
+
+
+        
+
+        public SerializableTransform RootControl;
+        public SerializableTransform CenterOfMass;
 
         public SerializableTransform LookAtTarget;
         public SerializableTransform HeadControl;
@@ -62,6 +70,9 @@ namespace Assets.Script
         {
             RigPose rigPose = new RigPose();
 
+            rigPose.RootControl = rig.RootControl;
+            rigPose.CenterOfMass = rig.CenterOfMass;
+
             rigPose.LookAtTarget = rig.LookAtTarget.transform;
             rigPose.HeadControl = rig.HeadControl.transform;
             rigPose.NeckControl = rig.NeckControl.transform;
@@ -86,7 +97,10 @@ namespace Assets.Script
         public static RigPose Lerp(RigPose A,RigPose B,float Alpha)
         {
             RigPose rigPose = new RigPose();
-            
+
+            rigPose.RootControl = SerializableTransform.Lerp(A.RootControl, B.RootControl, Alpha);
+            rigPose.CenterOfMass = SerializableTransform.Lerp(A.CenterOfMass, B.CenterOfMass, Alpha);
+
             rigPose.LookAtTarget = SerializableTransform.Lerp(A.LookAtTarget, B.LookAtTarget, Alpha);
             rigPose.HeadControl = SerializableTransform.Lerp(A.HeadControl, B.HeadControl, Alpha);
             rigPose.NeckControl = SerializableTransform.Lerp(A.NeckControl, B.NeckControl, Alpha);

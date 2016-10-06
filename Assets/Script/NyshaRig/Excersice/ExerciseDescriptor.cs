@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Assets.Script.Excersice
+namespace Assets.Script.NyshaRig.Excersice
 {
     [Serializable]
     public class ExerciseDescriptor

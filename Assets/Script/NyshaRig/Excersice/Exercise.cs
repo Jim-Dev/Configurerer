@@ -8,7 +8,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace Assets.Script.Excersice
+namespace Assets.Script.NyshaRig.Excersice
 {
     public class Exercise:MonoBehaviour
     {
