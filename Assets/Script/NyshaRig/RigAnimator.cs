@@ -117,6 +117,7 @@ namespace Assets.Script.NyshaRig
             animator.SetLookAtWeight(IkConfig.LookAtBaseWeight, IkConfig.LookAtBodyWeight, IkConfig.LookAtHeadWeight, IkConfig.LookAtEyesWeight, IkConfig.LookAtClampWeight);
 
             RigConfig.SKRoot.localPosition = RigConfig.CenterOfMass.localPosition - CenterOfMassOffset;
+            RigConfig.SKRoot.rotation = RigConfig.CenterOfMass.rotation;// - CenterOfMassOffset;
 
 
 

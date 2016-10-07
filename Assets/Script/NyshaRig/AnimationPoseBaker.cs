@@ -26,6 +26,9 @@ namespace Assets.Script.NyshaRig
         [Space(10)]
         public RigSetup Rig;
         private RigPose rigPose;
+
+        public RigAnimation RigAnim;
+        public RigAnimation[] RigAnims;
         // Use this for initialization
         void Start()
         {

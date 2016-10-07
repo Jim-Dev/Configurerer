@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Assets.Script.NyshaRig.Excersice
 {
-    public class Burpee : Exercise
+    public class CrowYoga : Exercise
     {
 
         private float totalDeltaTime;
@@ -23,7 +23,7 @@ namespace Assets.Script.NyshaRig.Excersice
         {
             if (TransitionAlpha >= TransitionThreshold )
             {
-                if (selectedPoseIndex == 10)
+                if (selectedPoseIndex == 15)
                     selectedPoseIndex = -1;
                 Debug.Log("ReachExtreme");
                 totalDeltaTime = 0;
@@ -48,28 +48,36 @@ namespace Assets.Script.NyshaRig.Excersice
             WaitTimeOnExtreme = 5;
 
             TransitionTimeExtremeToRest = 5;
-            TransitionTimeRestToExtreme = 1;
+            TransitionTimeRestToExtreme = 3;
 
             ExercisePoses = new List<RigPose>();
-            LoadPoseFromAsset("Burpee01");
-            LoadPoseFromAsset("Burpee07");
-            LoadPoseFromAsset("Burpee08");
-            LoadPoseFromAsset("Burpee09");
-            LoadPoseFromAsset("Burpee05");
-            LoadPoseFromAsset("Burpee06");
-            PoseSeries = new int[11];
+            LoadPoseFromAsset("Yoga_ChildPose");
+            LoadPoseFromAsset("DownwardDuck01");
+            LoadPoseFromAsset("DownwardDuck02");
+            LoadPoseFromAsset("DownwardDuck03");
+            LoadPoseFromAsset("DownwardDuck04");
+            LoadPoseFromAsset("FireFly");
+            LoadPoseFromAsset("FireFly02");
+            LoadPoseFromAsset("Crow");
+            //LoadPoseFromAsset("Burpee06");
+            PoseSeries = new int[16];
             PoseSeries[0] = 0;
             PoseSeries[1] = 1;
             PoseSeries[2] = 2;
             PoseSeries[3] = 3;
-            PoseSeries[4] = 2;
-            PoseSeries[5] = 1;
-            PoseSeries[6] = 0;
-            PoseSeries[7] = 4;
-            PoseSeries[8] = 5;
-            PoseSeries[9] = 4;
-            PoseSeries[10] = 0;
-            selectedPoseIndex = 1;
+            PoseSeries[4] = 4;
+            PoseSeries[5] = 5;
+            PoseSeries[6] = 6;
+            PoseSeries[7] = 7;
+            PoseSeries[8] = 6;
+            PoseSeries[9] = 5;
+            PoseSeries[10] = 4;
+            PoseSeries[11] = 3;
+            PoseSeries[12] = 2;
+            PoseSeries[13] = 1;
+            PoseSeries[14] = 0;
+            PoseSeries[15] = 0;
+            selectedPoseIndex = 0;
             CurrentPose = RigPose.FromRig(Rig);
 
             totalDeltaTime = 0;
