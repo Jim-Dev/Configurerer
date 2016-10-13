@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Assets.Script.NyshaRig
 {
+    [ExecuteInEditMode]
     public class RigAnimator : MonoBehaviour
     {
 
@@ -27,7 +28,7 @@ namespace Assets.Script.NyshaRig
 
         void Awake()
         {
-            animator = GetComponentInParent<Animator>();
+            animator = GetComponentInChildren<Animator>();
             RigConfig = GetComponentInParent<RigSetup>();
             IkConfig = GetComponentInParent<IKSetup>();
         }
@@ -116,20 +117,23 @@ namespace Assets.Script.NyshaRig
             animator.SetLookAtPosition(RigConfig.LookAtTarget.position);
             animator.SetLookAtWeight(IkConfig.LookAtBaseWeight, IkConfig.LookAtBodyWeight, IkConfig.LookAtHeadWeight, IkConfig.LookAtEyesWeight, IkConfig.LookAtClampWeight);
 
-            RigConfig.SKRoot.localPosition = RigConfig.CenterOfMass.localPosition - CenterOfMassOffset;
-            RigConfig.SKRoot.rotation = RigConfig.CenterOfMass.rotation;// - CenterOfMassOffset;
 
+            RigConfig.SKRoot.localPosition = RigConfig.CenterOfMass.localPosition;
+            RigConfig.SKRoot.localRotation = RigConfig.CenterOfMass.localRotation;
 
+            RigConfig.HipsControl.position = animator.GetBoneTransform(HumanBodyBones.Hips).position;
+            animator.SetBoneLocalRotation(HumanBodyBones.Hips,  RigConfig.RootControl.rotation * (RigConfig.HipsControl.rotation));
 
-            //RigConfig.ChestControl.localPosition = animator.GetBoneTransform(HumanBodyBones.Chest).localPosition;
-            //animator.SetBoneLocalRotation(HumanBodyBones.Chest, RigConfig.ChestControl.localRotation);
+            RigConfig.ChestControl.position = animator.GetBoneTransform(HumanBodyBones.Chest).position;
+            animator.SetBoneLocalRotation(HumanBodyBones.Chest, RigConfig.ChestControl.localRotation);
 
-            //RigConfig.HeadControl.localPosition = animator.GetBoneTransform(HumanBodyBones.Head).localPosition;
-            //animator.SetBoneLocalRotation(HumanBodyBones.Head, RigConfig.HeadControl.localRotation);
+            RigConfig.NeckControl.position = animator.GetBoneTransform(HumanBodyBones.Neck).position;
+            animator.SetBoneLocalRotation(HumanBodyBones.Neck, RigConfig.NeckControl.localRotation);
 
-            //RigConfig.NeckControl.localPosition = animator.GetBoneTransform(HumanBodyBones.Neck).localPosition;
-            //animator.SetBoneLocalRotation(HumanBodyBones.Neck, RigConfig.NeckControl.localRotation);
+            RigConfig.HeadControl.position = animator.GetBoneTransform(HumanBodyBones.Head).position;
+            animator.SetBoneLocalRotation(HumanBodyBones.Head, RigConfig.HeadControl.localRotation);
 
+            
         }
 
         private void DrawDebugLines()

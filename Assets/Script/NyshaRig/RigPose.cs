@@ -5,6 +5,8 @@ using System.Text;
 
 using UnityEngine;
 
+using System.IO;
+
 namespace Assets.Script.NyshaRig
 {
     [Serializable]
@@ -118,6 +120,26 @@ namespace Assets.Script.NyshaRig
             rigPose.RightFootIKPole = SerializableTransform.Lerp(A.RightFootIKPole, B.RightFootIKPole, Alpha);
 
             return rigPose;
+        }
+
+        public static RigPose LoadPoseFromAsset(string poseName)
+        {
+            string jsonString = string.Empty;
+
+            if (File.Exists(string.Format("{0}{1}", RigPose.PosesPath, poseName)))
+            {
+                using (FileStream fs = new FileStream(string.Format("{0}{1}", RigPose.PosesPath, poseName), FileMode.Open))
+                {
+                    using (StreamReader reader = new StreamReader(fs))
+                    {
+                        jsonString = reader.ReadToEnd();
+                    }
+                }
+
+                return RigPose.FromJson(jsonString);
+            }
+            else
+                return null;
         }
 
     }
