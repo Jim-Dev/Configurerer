@@ -217,7 +217,7 @@ namespace Assets.Script.NyshaRig
                 A = animTime - KFrames[0].FrameStartAt;
                 B = KFrames[1].FrameStartAt - KFrames[0].FrameStartAt;
                 Total = A / B;
-                Debug.Log(string.Format("A={0};B={1};Total={2}", A, B, Total));
+                //Debug.Log(string.Format("A={0};B={1};Total={2}", A, B, Total));
                 output = RigPose.Lerp(KFrames[0].Pose, KFrames[1].Pose, Total);
             }
             else return null;
@@ -225,6 +225,11 @@ namespace Assets.Script.NyshaRig
 
 
             return output;
+        }
+
+        public RigPose GetFinalPoseAtAnimPercentage(float animPercentage)
+        {
+            return GetFinalPoseAtTime(GetTotalDuration() * animPercentage);
         }
         
     }

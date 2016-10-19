@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Script.NyshaRig.Excersice
 {
-    public class GenericExercise:Exercise
+    public class GenericExercise : Exercise
     {
         public RigAnimation ToExtremeAnim;
         public RigAnimation ToRestAnim;
@@ -16,7 +16,7 @@ namespace Assets.Script.NyshaRig.Excersice
         RigKeyFrame estocadaMidFrame;
         RigKeyFrame estocadaExtremeFrame;
 
-        private float totalDeltaTime=-5;
+        private float totalDeltaTime = 0;
 
         private eTransitionState currentTransitionState;
         private eTransitionState previousTransitionState;
@@ -26,34 +26,84 @@ namespace Assets.Script.NyshaRig.Excersice
         public RigPose CurrentPose;
 
         public int[] PoseSeries;
+
+        [Range(0, 2)]
+        public float SpeedModifier = 1;
+
         public void Update()
         {
-            totalDeltaTime += Time.deltaTime;
-            //Debug.Log(totalDeltaTime);
-            //Debug.Log(string.Format("{0} : {1}",totalDeltaTime, ToExtremeAnim.GetPoseNameAtTime(totalDeltaTime)));
 
-            CurrentPose = ToExtremeAnim.GetFinalPoseAtTime(totalDeltaTime);
 
             Rig.SetFromPose(CurrentPose);
 
-            /*
-            if (TransitionAlpha >= TransitionThreshold)
+
+            if (TransitionAlpha >= TransitionThreshold && currentTransitionState == eTransitionState.OnExtremeToRest)
             {
-                if (selectedPoseIndex == 2)
-                    selectedPoseIndex = -1;
-                Debug.Log("ReachExtreme");
-                totalDeltaTime = 0;
-
-                selectedPoseIndex++;
+                Debug.Log("ReachRest");
                 TransitionAlpha = 0;
-                CurrentPose = RigPose.FromRig(Rig);
+                totalDeltaTime = 0;
+                previousTransitionState = currentTransitionState;
+                currentTransitionState = eTransitionState.OnRest;
+
+
             }
-            totalDeltaTime += Time.deltaTime;
-            TransitionAlpha = totalDeltaTime / TransitionTimeRestToExtreme;
+            else if (TransitionAlpha >= TransitionThreshold && currentTransitionState == eTransitionState.OnRestToExtreme)
+            {
+                Debug.Log("ReachExtreme");
+                TransitionAlpha = 0;
+                totalDeltaTime = 0;
+                previousTransitionState = currentTransitionState;
+                currentTransitionState = eTransitionState.OnExtreme;
+
+            }
 
 
-            TransitionPose(TransitionAlpha);
-            */
+
+            switch (currentTransitionState)
+            {
+                case eTransitionState.None:
+                    break;
+                case eTransitionState.OnWarmUp:
+                    totalDeltaTime += Time.deltaTime;
+                    if (totalDeltaTime >= WaitTimeWarmUp*SpeedModifier)
+                    {
+                        totalDeltaTime = 0;
+                        currentTransitionState = eTransitionState.OnRestToExtreme;
+                    }
+                    break;
+                case eTransitionState.OnRest:
+                    Debug.Log("OnRest");
+                    totalDeltaTime += Time.deltaTime;
+                    if (totalDeltaTime >= WaitTimeOnRest * SpeedModifier)
+                    {
+                        totalDeltaTime = 0;
+                        currentTransitionState = eTransitionState.OnRestToExtreme;
+                    }
+                    break;
+                case eTransitionState.OnRestToExtreme:
+                    totalDeltaTime += Time.deltaTime;
+                    TransitionAlpha = totalDeltaTime / TransitionTimeRestToExtreme * SpeedModifier;
+                    CurrentPose = ToExtremeAnim.GetFinalPoseAtAnimPercentage(TransitionAlpha);
+                    break;
+                case eTransitionState.OnExtreme:
+                    Debug.Log("OnExtreme");
+                    totalDeltaTime += Time.deltaTime;
+                    if (totalDeltaTime >= WaitTimeOnExtreme * SpeedModifier)
+                    {
+                        totalDeltaTime = 0;
+                        currentTransitionState = eTransitionState.OnExtremeToRest;
+                    }
+                    break;
+                case eTransitionState.OnExtremeToRest:
+                    totalDeltaTime += Time.deltaTime;
+                    TransitionAlpha = (totalDeltaTime / TransitionTimeExtremeToRest * SpeedModifier);
+                    CurrentPose = ToExtremeAnim.GetFinalPoseAtAnimPercentage(1 - TransitionAlpha);
+                    break;
+                default:
+                    break;
+            }
+
+
         }
 
         public void Start()
@@ -67,19 +117,14 @@ namespace Assets.Script.NyshaRig.Excersice
 
             estocadaRestFrame = new RigKeyFrame();
             estocadaRestFrame.FrameStartAt = 0;
-            //estocadaRestFrame.FrameEndAt = 5;
-            //estocadaRestFrame.Duration = 5;
             estocadaRestFrame.Pose = RigPose.LoadPoseFromAsset("EstocadaFrontal_Rest.json");
 
             estocadaMidFrame = new RigKeyFrame();
             estocadaMidFrame.FrameStartAt = 5;
-            //estocadaRestFrame.FrameEndAt = 5;
-            //estocadaMidFrame.Duration = 2;
             estocadaMidFrame.Pose = RigPose.LoadPoseFromAsset("EstocadaFrontal_Mid.json");
 
             estocadaExtremeFrame = new RigKeyFrame();
             estocadaExtremeFrame.FrameStartAt = 6;
-            //estocadaExtremeFrame.Duration = 7;
             estocadaExtremeFrame.Pose = RigPose.LoadPoseFromAsset("EstocadaFrontal_90.json");
 
             ToExtremeAnim = new RigAnimation();
@@ -87,10 +132,7 @@ namespace Assets.Script.NyshaRig.Excersice
             ToExtremeAnim.AddKeyFrame(estocadaRestFrame);
             ToExtremeAnim.AddKeyFrame(estocadaMidFrame);
             ToExtremeAnim.AddKeyFrame(estocadaExtremeFrame);
-            //ToExtremeAnim.AddKeyFrame(YogaChildPoseFrame);
-            //ToExtremeAnim.AnimationFrames.Add(estocadaRestFrame);
-            //ToExtremeAnim.AnimationFrames.Add(estocadaMidFrame);
-            //ToExtremeAnim.AnimationFrames.Add(estocadaExtremeFrame);
+
 
             WaitTimeWarmUp = 2;
             WaitTimeOnRest = 3;
@@ -99,20 +141,21 @@ namespace Assets.Script.NyshaRig.Excersice
             TransitionTimeExtremeToRest = 5;
             TransitionTimeRestToExtreme = 1;
 
-       
+
             CurrentPose = RigPose.FromRig(Rig);
 
-            totalDeltaTime = -5;
+            totalDeltaTime = 0;
             previousTransitionState = eTransitionState.None;
             currentTransitionState = eTransitionState.None;
 
-            currentTransitionState = eTransitionState.OnRestToExtreme;
+            currentTransitionState = eTransitionState.OnWarmUp;
 
         }
 
         private enum eTransitionState
         {
             None,
+            OnWarmUp,
             OnRest,
             OnRestToExtreme,
             OnExtreme,
