@@ -27,8 +27,10 @@ namespace Assets.Script.NyshaRig.Excersice
 
         public int[] PoseSeries;
 
-        [Range(0, 2)]
+        [Range(0.1f, 2)]
         public float SpeedModifier = 1;
+
+        public bool MirrorAnim = false;
 
         public void Update()
         {
@@ -44,6 +46,7 @@ namespace Assets.Script.NyshaRig.Excersice
                 totalDeltaTime = 0;
                 previousTransitionState = currentTransitionState;
                 currentTransitionState = eTransitionState.OnRest;
+                MirrorAnim = !MirrorAnim;
 
 
             }
@@ -65,7 +68,7 @@ namespace Assets.Script.NyshaRig.Excersice
                     break;
                 case eTransitionState.OnWarmUp:
                     totalDeltaTime += Time.deltaTime;
-                    if (totalDeltaTime >= WaitTimeWarmUp*SpeedModifier)
+                    if (totalDeltaTime >= WaitTimeWarmUp/SpeedModifier)
                     {
                         totalDeltaTime = 0;
                         currentTransitionState = eTransitionState.OnRestToExtreme;
@@ -74,7 +77,7 @@ namespace Assets.Script.NyshaRig.Excersice
                 case eTransitionState.OnRest:
                     Debug.Log("OnRest");
                     totalDeltaTime += Time.deltaTime;
-                    if (totalDeltaTime >= WaitTimeOnRest * SpeedModifier)
+                    if (totalDeltaTime >= WaitTimeOnRest / SpeedModifier)
                     {
                         totalDeltaTime = 0;
                         currentTransitionState = eTransitionState.OnRestToExtreme;
@@ -83,12 +86,15 @@ namespace Assets.Script.NyshaRig.Excersice
                 case eTransitionState.OnRestToExtreme:
                     totalDeltaTime += Time.deltaTime;
                     TransitionAlpha = totalDeltaTime / TransitionTimeRestToExtreme * SpeedModifier;
-                    CurrentPose = ToExtremeAnim.GetFinalPoseAtAnimPercentage(TransitionAlpha);
+                    if (MirrorAnim)
+                        CurrentPose = ToExtremeAnim.GetFinalPoseAtAnimPercentage(TransitionAlpha).GetMirroredPose();
+                    else
+                        CurrentPose = ToExtremeAnim.GetFinalPoseAtAnimPercentage(TransitionAlpha);
                     break;
                 case eTransitionState.OnExtreme:
                     Debug.Log("OnExtreme");
                     totalDeltaTime += Time.deltaTime;
-                    if (totalDeltaTime >= WaitTimeOnExtreme * SpeedModifier)
+                    if (totalDeltaTime >= WaitTimeOnExtreme / SpeedModifier)
                     {
                         totalDeltaTime = 0;
                         currentTransitionState = eTransitionState.OnExtremeToRest;
@@ -97,7 +103,10 @@ namespace Assets.Script.NyshaRig.Excersice
                 case eTransitionState.OnExtremeToRest:
                     totalDeltaTime += Time.deltaTime;
                     TransitionAlpha = (totalDeltaTime / TransitionTimeExtremeToRest * SpeedModifier);
-                    CurrentPose = ToExtremeAnim.GetFinalPoseAtAnimPercentage(1 - TransitionAlpha);
+                    if (MirrorAnim)
+                        CurrentPose = ToExtremeAnim.GetFinalPoseAtAnimPercentage(1 - TransitionAlpha).GetMirroredPose();
+                    else
+                        CurrentPose = ToExtremeAnim.GetFinalPoseAtAnimPercentage(1 - TransitionAlpha);
                     break;
                 default:
                     break;

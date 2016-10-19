@@ -75,5 +75,21 @@ public static SerializableTransform Empty()
 
             return output;
         }
+
+        public SerializableTransform Mirror()
+        {
+            SerializableTransform normalTransform = this;
+            Quaternion normalRotation = ((Quaternion)normalTransform.Rotation);
+            //normalRotation.
+            SerializableVector3 mirroredPosition = new SerializableVector3(
+                normalTransform.Position.X * -1,
+                normalTransform.Position.Y,
+                normalTransform.Position.Z);
+            //SerializableQuaternion mirroredRotation = normalTransform.Rotation
+
+            //SerializableTransform mirroredTransform = new SerializableTransform();
+
+            return new SerializableTransform(mirroredPosition, normalTransform.Rotation, normalTransform.Scale);
+        }
     }
 }

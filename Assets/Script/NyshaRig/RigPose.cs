@@ -142,5 +142,45 @@ namespace Assets.Script.NyshaRig
                 return null;
         }
 
+        public RigPose GetMirroredPose()
+        {
+            RigPose normalPose = this;
+
+            RigPose mirroredPose = new RigPose();
+
+            //mirroredPose = normalPose;
+            //mirroredPose = normalPose;
+            //mirroredPose.CenterOfMass.Position = normalPose.CenterOfMass.Position;
+            mirroredPose.RootControl = normalPose.RootControl;
+            mirroredPose.CenterOfMass = normalPose.CenterOfMass;
+            mirroredPose.LookAtTarget = normalPose.LookAtTarget;
+            // mirroredPose.CenterOfMass.Rotation = Quaternion.AngleAxis(180, Vector3.up);
+
+            //mirroredPose.LeftHandIKTarget = normalPose.RightHandIKTarget;
+            //mirroredPose.RightHandIKTarget = normalPose.LeftHandIKTarget;
+
+            //mirroredPose.RightFootIKTarget = normalPose.LeftFootIKTarget;
+            //mirroredPose.LeftFootIKTarget = normalPose.RightFootIKTarget;
+            
+            mirroredPose.LeftFootIKTarget = normalPose.RightFootIKTarget.Mirror();
+            mirroredPose.LeftFootIKPole = normalPose.RightFootIKPole.Mirror();
+            //((Transform)mirroredPose.LeftFootIKTarget).Rotate(Vector3.up, 180);
+
+            mirroredPose.RightFootIKTarget = normalPose.LeftFootIKTarget.Mirror();
+            mirroredPose.RightFootIKPole = normalPose.LeftFootIKPole.Mirror();
+
+            mirroredPose.LeftHandIKTarget = normalPose.RightHandIKTarget.Mirror();
+            mirroredPose.LeftHandIKPole = normalPose.RightHandIKPole.Mirror();
+
+            mirroredPose.RightHandIKTarget = normalPose.LeftHandIKTarget.Mirror();
+            mirroredPose.RightHandIKPole = normalPose.LeftHandIKPole.Mirror();
+            // ((Transform)mirroredPose.RightFootIKTarget).Rotate(Vector3.up, 180);
+
+            //mirroredPose.CenterOfMass.Rotation = normalPose.CenterOfMass.Rotation.AngleAxis(180, Vector3.up); Quaternion.
+            //mirroredPose.CenterOfMass.Scale=
+
+            return mirroredPose;
+        }
+
     }
 }
