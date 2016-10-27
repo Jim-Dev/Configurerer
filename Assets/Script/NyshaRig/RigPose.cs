@@ -10,27 +10,12 @@ using System.IO;
 namespace Assets.Script.NyshaRig
 {
     [Serializable]
-    public class RigPose
+    public class RigPose:JsonSerializable
     {
-        public static string PosesPath
-        {
-            get
-            {
-#if UNITY_EDITOR
-                return "Assets/Animations/Poses/";
-#endif
 
-#if UNITY_STANDALONE
-                return "Assets/Animations/Poses/";
-#endif
-            }
-        }
+        public const string DEFAULT_ASSET_PATH = "Assets/Animations/Poses/";
 
         public string PoseName;
-
-
-
-
         
 
         public SerializableTransform RootControl;
@@ -53,6 +38,10 @@ namespace Assets.Script.NyshaRig
 
         public SerializableTransform LeftFootIKPole;
         public SerializableTransform RightFootIKPole;
+
+        public RigPose()
+        {
+        }
 
         public string ToJson()
         {
@@ -122,26 +111,6 @@ namespace Assets.Script.NyshaRig
             return rigPose;
         }
 
-        public static RigPose LoadPoseFromAsset(string poseName)
-        {
-            string jsonString = string.Empty;
-
-            if (File.Exists(string.Format("{0}{1}", RigPose.PosesPath, poseName)))
-            {
-                using (FileStream fs = new FileStream(string.Format("{0}{1}", RigPose.PosesPath, poseName), FileMode.Open))
-                {
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        jsonString = reader.ReadToEnd();
-                    }
-                }
-
-                return RigPose.FromJson(jsonString);
-            }
-            else
-                return null;
-        }
-
         public RigPose GetMirroredPose()
         {
             RigPose normalPose = this;
@@ -182,5 +151,19 @@ namespace Assets.Script.NyshaRig
             return mirroredPose;
         }
 
+        public static RigPose LoadFromFile(string fileName)
+        {
+            return JsonUtility.FromJson<RigPose>(LoadJsonFile(RigPose.DEFAULT_ASSET_PATH, fileName));
+        }
+
+        public override void SaveToFile(string fileName, string directoryPath)
+        {
+            base.SaveToFile(fileName, directoryPath);
+        }
+
+        public void SaveToFile(string fileName)
+        {
+            this.SaveToFile(fileName, DEFAULT_ASSET_PATH);
+        }
     }
 }

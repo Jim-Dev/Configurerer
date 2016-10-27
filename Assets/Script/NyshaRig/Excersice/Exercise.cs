@@ -38,30 +38,7 @@ namespace Assets.Script.NyshaRig.Excersice
 
 
         protected RigSetup Rig;
-
-        public bool LoadPoseFromAsset(string poseName)
-        {
-            if (File.Exists(string.Format("{0}{1}.json",RigPose.PosesPath, poseName)))
-            {
-                ExercisePoses.Add(RigPose.FromJson(LoadJsonFile(string.Format("{0}{1}.json", RigPose.PosesPath, poseName))));
-                return true;
-            }
-            else
-                return false;
-        }
-
-        public string LoadJsonFile(string path)
-        {
-            string output = string.Empty;
-            using (FileStream fs = new FileStream(path, FileMode.Open))
-            {
-                using (StreamReader reader = new StreamReader(fs))
-                {
-                    output = reader.ReadToEnd();
-                }
-            }
-            return output;
-        }
+      
 
         public void Start()
         {

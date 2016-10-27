@@ -10,22 +10,28 @@ using System.IO;
 namespace Assets.Script.NyshaRig
 {
     [Serializable]
-    public class RigAnimation 
+    public class RigAnimation :JsonSerializable
     {
-        public string AnimationName;
-        private Dictionary<Guid, RigKeyFrame> AnimationFrames; //frameID,RigKeyFrame
 
+        public const string DEFAULT_ASSET_PATH = "Assets/Animations/JsonAnims/";
+
+        public string AnimationName;
+        [SerializeField]
+        //public SerializableDictionary<string, RigKeyFrame> AnimationFrames; //frameID,RigKeyFrame
+        public List<RigKeyFrame> AnimationFrames;
         public RigAnimation()
         {
-            AnimationFrames = new Dictionary<Guid, RigKeyFrame> ();
-
+            //AnimationFrames = new SerializableDictionary<string, RigKeyFrame> ();
+            //SerializableFrames = new List<RigKeyFrame>();
+            AnimationFrames = new List<RigKeyFrame>();
 
             AnimationName = string.Empty;
         }
 
         public void AddKeyFrame(RigKeyFrame keyFrame)
         {
-            AnimationFrames.Add(Guid.NewGuid(), keyFrame);
+            //AnimationFrames.Add(Guid.NewGuid().ToString(), keyFrame);
+            AnimationFrames.Add(keyFrame);
         }
 
 
@@ -35,7 +41,7 @@ namespace Assets.Script.NyshaRig
 
             float maxFramePosition = float.MinValue;
 
-            foreach (RigKeyFrame kFrame in AnimationFrames.Values)
+            foreach (RigKeyFrame kFrame in AnimationFrames)
             {
                 if (kFrame.FrameStartAt > maxFramePosition)
                     maxFramePosition = kFrame.FrameStartAt;
@@ -54,7 +60,7 @@ namespace Assets.Script.NyshaRig
             RigKeyFrame tmpKFrame= new RigKeyFrame();
             tmpKFrame.FrameStartAt = float.MaxValue;
 
-            foreach (RigKeyFrame kFrame in AnimationFrames.Values)
+            foreach (RigKeyFrame kFrame in AnimationFrames)
             {
                 if (kFrame.FrameStartAt < tmpKFrame.FrameStartAt)
                     tmpKFrame = kFrame;
@@ -66,7 +72,7 @@ namespace Assets.Script.NyshaRig
             RigKeyFrame tmpKFrame = new RigKeyFrame();
             tmpKFrame.FrameStartAt = float.MinValue;
 
-            foreach (RigKeyFrame kFrame in AnimationFrames.Values)
+            foreach (RigKeyFrame kFrame in AnimationFrames)
             {
                 if (kFrame.FrameStartAt > tmpKFrame.FrameStartAt)
                     tmpKFrame = kFrame;
@@ -90,7 +96,7 @@ namespace Assets.Script.NyshaRig
                 return output;
             }
 
-            foreach (RigKeyFrame kFrame in AnimationFrames.Values)
+            foreach (RigKeyFrame kFrame in AnimationFrames)
             {
                 if (kFrame.FrameStartAt == animTime)
                 {
@@ -103,7 +109,7 @@ namespace Assets.Script.NyshaRig
             RigKeyFrame positiveFrame = new RigKeyFrame();
 
             float negativeDelta = float.MaxValue;
-            foreach (RigKeyFrame kFrame in AnimationFrames.Values)
+            foreach (RigKeyFrame kFrame in AnimationFrames)
             {
                 float deltaF = animTime - kFrame.FrameStartAt;
                 if (deltaF > 0)
@@ -117,7 +123,7 @@ namespace Assets.Script.NyshaRig
             }
 
             float positiveDelta = float.MaxValue;
-            foreach (RigKeyFrame kFrame in AnimationFrames.Values)
+            foreach (RigKeyFrame kFrame in AnimationFrames)
             {
                 float deltaF =   kFrame.FrameStartAt - animTime;
                 if (deltaF > 0)
@@ -135,49 +141,19 @@ namespace Assets.Script.NyshaRig
             return output;
         }
 
-        public static RigAnimation LoadPoseFromAsset(string poseName)
+        public static RigAnimation LoadFromFile(string fileName)
         {
-            string jsonString = string.Empty;
-
-            if (File.Exists(string.Format("{0}{1}", RigPose.PosesPath, poseName)))
-            {
-                using (FileStream fs = new FileStream(string.Format("{0}{1}", RigPose.PosesPath, poseName), FileMode.Open))
-                {
-                    using (StreamReader reader = new StreamReader(fs))
-                    {
-                        jsonString = reader.ReadToEnd();
-                    }
-                }
-
-                return RigAnimation.FromJson(jsonString);
-            }
-            else
-                return null;
+            return JsonUtility.FromJson<RigAnimation>(LoadJsonFile(RigAnimation.DEFAULT_ASSET_PATH, fileName));
         }
 
-        public void WriteAsset(string fileName)
+        public override void SaveToFile(string fileName, string directoryPath)
         {
-            using (FileStream fs = new FileStream(string.Format( @"Assets/Animations/Poses/{0}.json",fileName), FileMode.Create))
-            {
-                using (StreamWriter writer = new StreamWriter(fs))
-                {
-                    writer.Write(ToJson());
-                }
-            }
+            base.SaveToFile(fileName, directoryPath);
         }
 
-        public string ToJson()
+        public void SaveToFile(string fileName)
         {
-            return ToJson(true);
-        }
-        public string ToJson(bool prettyPrint)
-        {
-            return JsonUtility.ToJson(this, prettyPrint);
-        }
-
-        public static RigAnimation FromJson(string JsonString)
-        {
-            return JsonUtility.FromJson<RigAnimation>(JsonString);
+            this.SaveToFile(fileName, DEFAULT_ASSET_PATH);
         }
 
         public List<RigPose> GetPoseAtAnimTime(float animTime)
@@ -237,14 +213,7 @@ namespace Assets.Script.NyshaRig
     public class RigKeyFrame
     {
         public float FrameStartAt;
-        private float FrameEndAt;
-
-        public float Duration
-        {
-            get { return FrameStartAt - FrameEndAt; }
-        }
         public RigPose Pose;
-
     }
 
 }

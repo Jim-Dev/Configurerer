@@ -5,8 +5,6 @@ using Assets.Script.NyshaRig.Excersice;
 [RequireComponent(typeof(Animator))]
 public class NyshaAnimatorHelper : MonoBehaviour
 {
-   
-    public ExerciseDescriptor ExerciseDescriptor;
 
     public AnimatorOverrideController ExerciseOverride;
     public AnimationCurve AnimCurve;

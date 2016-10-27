@@ -73,7 +73,7 @@ public class RigAnimCreatorEditor : Editor
     */
     private void SaveAnimation()
     {
-        rigAnimCreator.RigAnim.WriteAsset(rigAnimCreator.RigAnim.AnimationName);
+        rigAnimCreator.RigAnim.SaveToFile(rigAnimCreator.RigAnim.AnimationName);
     }
     
 }

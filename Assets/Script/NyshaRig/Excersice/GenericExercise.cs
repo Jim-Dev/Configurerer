@@ -7,8 +7,10 @@ using UnityEngine;
 
 namespace Assets.Script.NyshaRig.Excersice
 {
-    public class GenericExercise : Exercise
+    public class GenericExercise:Exercise
     {
+        //public ExerciseInfo exerciseInfo;
+
         public RigAnimation ToExtremeAnim;
         public RigAnimation ToRestAnim;
 
@@ -75,7 +77,7 @@ namespace Assets.Script.NyshaRig.Excersice
                     }
                     break;
                 case eTransitionState.OnRest:
-                    Debug.Log("OnRest");
+                    //Debug.Log("OnRest");
                     totalDeltaTime += Time.deltaTime;
                     if (totalDeltaTime >= WaitTimeOnRest / SpeedModifier)
                     {
@@ -92,7 +94,7 @@ namespace Assets.Script.NyshaRig.Excersice
                         CurrentPose = ToExtremeAnim.GetFinalPoseAtAnimPercentage(TransitionAlpha);
                     break;
                 case eTransitionState.OnExtreme:
-                    Debug.Log("OnExtreme");
+                    //Debug.Log("OnExtreme");
                     totalDeltaTime += Time.deltaTime;
                     if (totalDeltaTime >= WaitTimeOnExtreme / SpeedModifier)
                     {
@@ -119,35 +121,35 @@ namespace Assets.Script.NyshaRig.Excersice
         {
             base.Start();
 
+            //exerciseInfo = new ExerciseInfo();
+
             RigKeyFrame YogaChildPoseFrame = new RigKeyFrame();
             YogaChildPoseFrame.FrameStartAt = 7;
-            YogaChildPoseFrame.Pose = RigPose.LoadPoseFromAsset("Yoga_ChildPose.json");
+            YogaChildPoseFrame.Pose = RigPose.LoadFromFile("Yoga_ChildPose");
 
 
             estocadaRestFrame = new RigKeyFrame();
             estocadaRestFrame.FrameStartAt = 0;
-            estocadaRestFrame.Pose = RigPose.LoadPoseFromAsset("EstocadaFrontal_Rest.json");
+            estocadaRestFrame.Pose = RigPose.LoadFromFile("EstocadaFrontal_Rest");
 
             estocadaMidFrame = new RigKeyFrame();
             estocadaMidFrame.FrameStartAt = 5;
-            estocadaMidFrame.Pose = RigPose.LoadPoseFromAsset("EstocadaFrontal_Mid.json");
+            estocadaMidFrame.Pose = RigPose.LoadFromFile("EstocadaFrontal_Mid");
 
             estocadaExtremeFrame = new RigKeyFrame();
             estocadaExtremeFrame.FrameStartAt = 6;
-            estocadaExtremeFrame.Pose = RigPose.LoadPoseFromAsset("EstocadaFrontal_90.json");
+            estocadaExtremeFrame.Pose = RigPose.LoadFromFile("EstocadaFrontal_90");
 
             ToExtremeAnim = new RigAnimation();
-            ToExtremeAnim.AnimationName = "Estocada frontal RestToExtreme";
-            ToExtremeAnim.AddKeyFrame(estocadaRestFrame);
-            ToExtremeAnim.AddKeyFrame(estocadaMidFrame);
-            ToExtremeAnim.AddKeyFrame(estocadaExtremeFrame);
+            ToExtremeAnim = RigAnimation.LoadFromFile("EstocadaFrontal");
+
 
 
             WaitTimeWarmUp = 2;
             WaitTimeOnRest = 3;
             WaitTimeOnExtreme = 5;
 
-            TransitionTimeExtremeToRest = 5;
+            TransitionTimeExtremeToRest = 0.75f;
             TransitionTimeRestToExtreme = 1;
 
 

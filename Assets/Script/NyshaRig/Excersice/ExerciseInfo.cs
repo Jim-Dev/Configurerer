@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Assets.Script.NyshaRig.Excersice
 {
     [Serializable]
-    public class ExerciseDescriptor
+    public class ExerciseInfo//:MonoBehaviour
     {
         public string Name;
         public string Description;
@@ -26,6 +26,13 @@ namespace Assets.Script.NyshaRig.Excersice
 
         public RigPose[] ExercisePoses;
 
+        protected RigSetup Rig;
+
+        public ExerciseInfo()
+        {
+            //Rig = GetComponentInParent<RigSetup>();
+        }
+
         public string ToJson()
         {
             return ToJson(true);
@@ -35,11 +42,10 @@ namespace Assets.Script.NyshaRig.Excersice
             return JsonUtility.ToJson(this, prettyPrint);
         }
 
-        public ExerciseDescriptor FromJson(string JsonString)
+        public ExerciseInfo FromJson(string JsonString)
         {
-            return JsonUtility.FromJson<ExerciseDescriptor>(JsonString);
+            return JsonUtility.FromJson<ExerciseInfo>(JsonString);
         }
-
 
     }
 }

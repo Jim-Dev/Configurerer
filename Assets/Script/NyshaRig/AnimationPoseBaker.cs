@@ -44,37 +44,25 @@ namespace Assets.Script.NyshaRig
                 SetPose();
                 rigPose.PoseName = AnimPath;
                 ToJsonPose = rigPose.ToJson(true);
-                SaveItemInfo();
+                //SaveItemInfo();
+                SaveAssetToFile();
             }
             if (SetPoseFromJson)
             {
                 SetPoseFromJson = false;
-                rigPose = RigPose.FromJson(FromJsonPose);
+                //rigPose = RigPose.FromJson(FromJsonPose);
+                rigPose = RigPose.LoadFromFile(AnimPath) as RigPose;
                 SetJsonPoseControls();
-
             }
 
 
         }
 
-        public void SaveItemInfo()
+        public void SaveAssetToFile()
         {
-            string assetPath = string.Empty;
-
-            assetPath = string.Format(@"{0}{1}.json", RigPose.PosesPath, rigPose.PoseName);
-            using (FileStream fs = new FileStream(assetPath, FileMode.Create))
-            {
-                using (StreamWriter writer = new StreamWriter(fs))
-                {
-                    writer.Write(ToJsonPose);
-                }
-            }
-
-#if UNITY_EDITOR
+            rigPose.SaveToFile(rigPose.PoseName,RigPose.DEFAULT_ASSET_PATH);
             UnityEditor.AssetDatabase.Refresh();
-#endif
         }
-
 
         private void SetPose()
         {
