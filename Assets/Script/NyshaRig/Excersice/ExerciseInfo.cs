@@ -23,10 +23,17 @@ namespace Assets.Script.NyshaRig.Excersice
         public float TransitionTimeExtremeToRest;
 
         public bool AlternateMirroring;
+        //---
+        public float TransitionAlpha;
 
-        public RigPose[] ExercisePoses;
+        [Range(0, 1)]
+        public float TransitionThreshold = 1;
+        public float SpeedModifier = 1;
+        //-----
 
-        protected RigSetup Rig;
+        //public RigPose[] ExercisePoses;
+
+        public RigSetup Rig;
 
         public ExerciseInfo()
         {

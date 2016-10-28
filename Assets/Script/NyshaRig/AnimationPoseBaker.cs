@@ -17,6 +17,7 @@ namespace Assets.Script.NyshaRig
         [Space(5)]
         public bool CreateJsonPose;
         public bool SetPoseFromJson;
+        public bool SetPoseFromPoseName;
         [Space(10)]
 
         [TextArea(2, 10)]
@@ -52,6 +53,13 @@ namespace Assets.Script.NyshaRig
                 SetPoseFromJson = false;
                 //rigPose = RigPose.FromJson(FromJsonPose);
                 rigPose = RigPose.LoadFromFile(AnimPath) as RigPose;
+                SetJsonPoseControls();
+            }
+            if (SetPoseFromPoseName)
+            {
+                SetPoseFromPoseName = false;
+
+                rigPose = RigPose.LoadFromFile(AnimPath);
                 SetJsonPoseControls();
             }
 
