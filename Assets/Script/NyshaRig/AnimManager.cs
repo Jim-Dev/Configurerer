@@ -8,49 +8,105 @@ using UnityEngine;
 
 namespace Assets.Script.NyshaRig
 {
-    public class RigAnimPlayer : MonoBehaviour
+    public class AnimManager : MonoBehaviour
     {
-        public RigAnimation RigAnimationSelected;
-        public ExerciseInfo exerInfo;
 
-        public string RigAnimName;
 
+
+        [Header("Animation Parameters")]
+        [Space(5)]
+        public string AnimName = "NewAnim";
+        [Space(5)]
+        public bool BakeAnimation = false;
         public bool LoadAnimation = false;
         public bool PlayAnimation = false;
-
+        public bool AlternateMirroring = true;
+        [Space(5)]
         public bool IsAnimPlaying = false;
-
-
-        private float totalDeltaTime = 0;
-
-        private eTransitionState currentTransitionState;
-
-        public int selectedPoseIndex = 0;
-
-        public RigPose CurrentPose;
-
-        RigSetup Rig;
-
         public bool MirrorAnim = false;
 
-        public void Start()
+        [Space(10)]
+        public string ActivePoseName;
+        [Space(10)]
+
+        public ExerciseInfo exerInfo;
+
+        [Space(10)]
+        public List<FrameInfo> Frames;
+
+        public RigAnimation RigAnim;
+        // Use this for initialization
+
+        [Header("New Frame")]
+        [Space(5)]
+        public string PoseName;
+        [Space(5)]
+        public float PoseStartAt;
+        [Space(5)]
+        public bool AddFrameToAnim;
+
+        private RigSetup Rig;
+        private RigPose CurrentPose;
+        private float totalDeltaTime = 0;
+        private eTransitionState currentTransitionState;
+
+        void Start()
         {
             Rig = GetComponentInParent<RigSetup>();
             currentTransitionState = eTransitionState.OnWarmUp;
         }
 
-        public void Update()
+        void Update()
         {
+            if (BakeAnimation)
+            {
+                BakeAnimation = false;
+                RigAnim = new RigAnimation();
+                RigAnim.AnimationName = AnimName;
+                foreach (FrameInfo fInfo in Frames)
+                {
+                    RigKeyFrame kFrame = new RigKeyFrame();
+                    kFrame.Pose = RigPose.LoadFromFile(fInfo.PoseName);
+                    kFrame.FrameStartAt = fInfo.FrameStartAt;
+                    RigAnim.AddKeyFrame(kFrame);
+                }
+                RigAnim.SaveToFile(RigAnim.AnimationName);
+                //RigAnim.SaveToDisk(RigAnim.AnimationName);
+                UnityEditor.AssetDatabase.Refresh();
+            }
+            if (AddFrameToAnim)
+            {
+                AddFrameToAnim = false;
+
+                RigPose rigPose = RigPose.LoadFromFile(PoseName);
+                if (rigPose != null)
+                {
+                    FrameInfo fInfo = new FrameInfo();
+                    fInfo.PoseName = rigPose.PoseName;
+                    fInfo.FrameStartAt = PoseStartAt;
+                    Frames.Add(fInfo);
+                    PoseStartAt++;
+                }
+            }
+
             if (LoadAnimation)
             {
                 LoadAnimation = false;
-                RigAnimationSelected = RigAnimation.LoadFromFile(RigAnimName);
+                RigAnim = RigAnimation.LoadFromFile(AnimName);
+                Frames.Clear();
+                foreach (RigKeyFrame frame in RigAnim.AnimationFrames)
+                {
+                    FrameInfo fInfo = new FrameInfo();
+                    fInfo.PoseName = frame.Pose.PoseName;
+                    fInfo.FrameStartAt = frame.FrameStartAt;
 
+                    Frames.Add(fInfo);
+                }
                 currentTransitionState = eTransitionState.OnWarmUp;
                 totalDeltaTime = 0;
-                CurrentPose = RigAnimationSelected.GetFirstFrame().Pose;
+                CurrentPose = RigAnim.GetFirstFrame().Pose;
 
-            }  
+            }
 
             if (PlayAnimation)
             {
@@ -58,10 +114,11 @@ namespace Assets.Script.NyshaRig
                 IsAnimPlaying = !IsAnimPlaying;
             }
 
+
             if (IsAnimPlaying)
             {
                 Rig.SetFromPose(CurrentPose);
-
+                ActivePoseName = CurrentPose.PoseName;
 
 
                 if (exerInfo.TransitionAlpha >= exerInfo.TransitionThreshold && currentTransitionState == eTransitionState.OnExtremeToRest)
@@ -70,7 +127,8 @@ namespace Assets.Script.NyshaRig
                     exerInfo.TransitionAlpha = 0;
                     totalDeltaTime = 0;
                     currentTransitionState = eTransitionState.OnRest;
-                    MirrorAnim = !MirrorAnim;
+                    if (AlternateMirroring)
+                        MirrorAnim = !MirrorAnim;
 
 
                 }
@@ -108,9 +166,9 @@ namespace Assets.Script.NyshaRig
                         totalDeltaTime += Time.deltaTime;
                         exerInfo.TransitionAlpha = totalDeltaTime / exerInfo.TransitionTimeRestToExtreme * exerInfo.SpeedModifier;
                         if (MirrorAnim)
-                            CurrentPose = RigAnimationSelected.GetFinalPoseAtAnimPercentage(exerInfo.TransitionAlpha).GetMirroredPose();
+                            CurrentPose = RigAnim.GetFinalPoseAtAnimPercentage(exerInfo.TransitionAlpha).GetMirroredPose();
                         else
-                            CurrentPose = RigAnimationSelected.GetFinalPoseAtAnimPercentage(exerInfo.TransitionAlpha);
+                            CurrentPose = RigAnim.GetFinalPoseAtAnimPercentage(exerInfo.TransitionAlpha);
                         break;
                     case eTransitionState.OnExtreme:
                         //Debug.Log("OnExtreme");
@@ -125,9 +183,9 @@ namespace Assets.Script.NyshaRig
                         totalDeltaTime += Time.deltaTime;
                         exerInfo.TransitionAlpha = (totalDeltaTime / exerInfo.TransitionTimeExtremeToRest * exerInfo.SpeedModifier);
                         if (MirrorAnim)
-                            CurrentPose = RigAnimationSelected.GetFinalPoseAtAnimPercentage(1 - exerInfo.TransitionAlpha).GetMirroredPose();
+                            CurrentPose = RigAnim.GetFinalPoseAtAnimPercentage(1 - exerInfo.TransitionAlpha).GetMirroredPose();
                         else
-                            CurrentPose = RigAnimationSelected.GetFinalPoseAtAnimPercentage(1 - exerInfo.TransitionAlpha);
+                            CurrentPose = RigAnim.GetFinalPoseAtAnimPercentage(1 - exerInfo.TransitionAlpha);
                         break;
                     default:
                         break;
@@ -135,10 +193,10 @@ namespace Assets.Script.NyshaRig
 
             }
 
-
-
-
         }
+
+
+
 
 
         private enum eTransitionState
@@ -150,14 +208,17 @@ namespace Assets.Script.NyshaRig
             OnExtreme,
             OnExtremeToRest
         }
-
-        public void TransitionPose(float Alpha)
-        {
-            //exerInfo.Rig.SetFromPose(RigPose.Lerp(CurrentPose, exerInfo.ExercisePoses[PoseSeries[selectedPoseIndex]], Alpha));
-        }
-
-
     }
 
+    [Serializable]
+    public struct FrameInfo
+    {
+        public string PoseName;
+        public float FrameStartAt;
 
+        public override string ToString()
+        {
+            return string.Format("{0} : At {1}", PoseName, FrameStartAt);
+        }
+    }
 }
