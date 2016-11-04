@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Script.NyshaRig
 {
-    public class RigExercisePlayer:MonoBehaviour
+    public class RigExercisePlayer:MonoBehaviour,IExercisePlayer
     {
 
         public string Editor_ExerciseName = string.Empty;
@@ -112,7 +112,7 @@ namespace Assets.Script.NyshaRig
             if (Editor_PrepareExercise)
             {
                 Editor_PrepareExercise = false;
-                PrepareExercise(new Exercise(Movement.EstocadaFrontalLarga, Limb.Interleaved), new BehaviourParams(360, 1.1f, 0.9f, 2, 3));
+                InitializeExercise(new Exercise(Movement.EstocadaFrontalLarga, Limb.Interleaved), new BehaviourParams(360, 1.1f, 0.9f, 2, 3));
             }
             if (Editor_GoToRest)
             {
@@ -141,8 +141,8 @@ namespace Assets.Script.NyshaRig
                         IsAnimExercisePreSetup = false;
                         IsExerciseInitialized = true;
                         StopAnimation();
-                        if (OnPrepareExerciseEnd != null)
-                            OnPrepareExerciseEnd.Invoke(this, new PrepareEventArgs(PrepareStatus.Prepared, Caller.Preview));
+                        if (OnInitializeExerciseEnd != null)
+                            OnInitializeExerciseEnd.Invoke(this, new PrepareEventArgs(PrepareStatus.Prepared, Caller.Preview));
                     }
 
 
@@ -213,7 +213,7 @@ namespace Assets.Script.NyshaRig
         }
 
         //Ye Old Mayan code
-        public void PrepareExercise(Exercise e, BehaviourParams param)
+        public void InitializeExercise(Exercise e, BehaviourParams param)
         {
             //throw new NotImplementedException();
 
@@ -248,24 +248,24 @@ namespace Assets.Script.NyshaRig
             LoadExercise(Editor_ExerciseName);
             IsAnimExercisePreSetup = true;
             IsAnimPlaying = true;
-            if (OnPrepareExerciseStart != null)
-                OnPrepareExerciseStart.Invoke(this, new PrepareEventArgs(PrepareStatus.Preparing, Caller.Preview));
+            if (OnInitializeExerciseStart != null)
+                OnInitializeExerciseStart.Invoke(this, new PrepareEventArgs(PrepareStatus.Preparing, Caller.Preview));
 
 
         }
 
-        public void PrepareExerciseWeb(string s)
+        public void InitializeWebExercise(string s)
         {
             throw new NotImplementedException();
         }
 
-        public void InitialPose()
+        public void SetRestPose()
         {
             PlayRestPose();
             //throw new NotImplementedException();
         }
 
-        public void RunExercise(bool isInInstruction)
+        public void StartExercise(bool isInInstruction)
         {
             //throw new NotImplementedException();
             if (IsExerciseInitialized)
@@ -274,21 +274,24 @@ namespace Assets.Script.NyshaRig
                 Debug.Log("Exercise not initialized");
         }
 
-        public void ResumeExercise()
+        public void ResumePauseExercise()
         {
-            PauseAnimation();
+            if (IsAnimPlaying)
+                PauseAnimation();
+            else
+                ResumeAnimation();
             //throw new NotImplementedException();
         }
 
-        public void RunExerciseWeb(string s)
+        public void StartWebExercise(string jsonString)
         {
             throw new NotImplementedException();
         }
 
-        public void RunExerciseWebWithoutParams()
+        public void StartExerciseNoParams()
         {
             //throw new NotImplementedException();
-            PrepareExercise(new Exercise(Movement.EstocadaFrontalLarga, Limb.Interleaved), new BehaviourParams(360, 1.1f, 0.9f, 2, 3));
+            InitializeExercise(new Exercise(Movement.EstocadaFrontalLarga, Limb.Interleaved), new BehaviourParams(360, 1.1f, 0.9f, 2, 3));
         }
 
         public void StopExercise()
@@ -305,9 +308,9 @@ namespace Assets.Script.NyshaRig
 
         public event EventHandler OnRepetitionReallyStart;
 
-        public event EventHandler<PrepareEventArgs> OnPrepareExerciseStart;
+        public event EventHandler<PrepareEventArgs> OnInitializeExerciseStart;
 
-        public event EventHandler<PrepareEventArgs> OnPrepareExerciseEnd;
+        public event EventHandler<PrepareEventArgs> OnInitializeExerciseEnd;
         //-- 
 
 
