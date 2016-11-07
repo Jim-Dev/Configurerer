@@ -1,4 +1,5 @@
 ﻿using Assets.Script.NyshaRig.Excersice;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace Assets.Script.NyshaRig
         public bool Editor_IsRunningTestAnim = false;
 
 
+        private Exercise Legacy_CurrentExercise;
         private RigPose RestPose;
         private RigAnimation RigAnim;
 
@@ -278,7 +280,11 @@ namespace Assets.Script.NyshaRig
 
         public void InitializeWebExercise(string jsonString)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+
+            PrepareExerciseWebParams pwp = JsonConvert.DeserializeObject<PrepareExerciseWebParams>(jsonString);
+            Legacy_CurrentExercise = pwp.Exercise;
+            InitializeExercise(pwp.Exercise, new BehaviourParams(360, 1.1f, 0.9f, 2, 3));
         }
 
         public void SetRestPose()
@@ -311,7 +317,25 @@ namespace Assets.Script.NyshaRig
 
         public void StartWebExercise(string jsonString)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+
+            BehaviourParams p = JsonConvert.DeserializeObject<BehaviourParams>(jsonString);
+
+
+            //AnimationBehaviour behaviour = AnimationBehaviour.GetBehaviour(Legacy_CurrentExercise.Movement, Legacy_CurrentExercise.Limb);
+
+            //behaviour.Stop();
+            p.Angle = AngleFixer.FixAngle(p.Angle, Legacy_CurrentExercise.Movement);
+            p.BackwardSpeed *= SpeedFixer.FixSpeed(Legacy_CurrentExercise.Movement);
+            p.ForwardSpeed *= SpeedFixer.FixSpeed(Legacy_CurrentExercise.Movement);
+            //StartCoroutine(RunWebInSeconds(0.4f, p));
+
+            exerInfo.WaitTimeWarmUp = 0.4f;
+            exerInfo.TransitionThreshold = p.Angle;
+            exerInfo.TransitionTimeRestToExtreme = p.ForwardSpeed;
+            exerInfo.TransitionTimeExtremeToRest = p.BackwardSpeed;
+
+            StartExercise(Editor_IsRunningTestAnim);
         }
 
         public void StartExerciseNoParams()
@@ -326,6 +350,9 @@ namespace Assets.Script.NyshaRig
 
             //throw new NotImplementedException();
         }
+
+
+
 
         public event EventHandler<RepetitionStartEventArgs> OnRepetitionStart;
 
@@ -504,6 +531,17 @@ namespace Assets.Script.NyshaRig
         public ExerciseInfo2()
         {
             ExerciseType = eExerciseTypes.None;
+        }
+    }
+
+    public class PrepareExerciseWebParams
+    {
+        public Exercise Exercise { get; set; }
+        public Caller Caller { get; set; }
+        public PrepareExerciseWebParams(Exercise e, Caller c)
+        {
+            this.Exercise = e;
+            this.Caller = c;
         }
     }
 }
