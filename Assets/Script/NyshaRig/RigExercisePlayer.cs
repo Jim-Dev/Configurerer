@@ -22,7 +22,7 @@ namespace Assets.Script.NyshaRig
         public bool Editor_StopExercise = false;
         public bool Editor_PrepareExercise = false;
         public bool Editor_GoToRest = false;
-
+        public bool Editor_IsRunningTestAnim = false;
 
 
         private RigPose RestPose;
@@ -57,26 +57,42 @@ namespace Assets.Script.NyshaRig
         public void PlayAnimation()
         {
             IsAnimPlaying = true;
+            if (OnAnimationStart != null)
+                OnAnimationStart.Invoke(this, new PrepareEventArgs(PrepareStatus.Preparing, Caller.Preview));
         }
 
         public void PlayRestPose()
         {
+            CurrentPose = RestPose;
             Rig.SetFromPose(RestPose);
         }
 
         public void PauseAnimation()
         {
-            IsAnimPlaying = false;
+            if (IsAnimPlaying)
+                StopAnimation();
         }
 
         public void ResumeAnimation()
         {
-            IsAnimPlaying = true;
+            if (!IsAnimPlaying)
+                PlayAnimation();
         }
 
         public void StopAnimation()
         {
             IsAnimPlaying = false;
+            //PlayRestPose();
+            if (Editor_IsRunningTestAnim)
+                Editor_IsRunningTestAnim = false;
+            if (OnAnimationEnd != null)
+                OnAnimationEnd.Invoke(this, new PrepareEventArgs(PrepareStatus.Preparing, Caller.Preview));
+
+            exerInfo.TransitionAlpha = 0;
+            currentTransitionState = eTransitionState.OnWarmUp;
+            totalDeltaTime = 0;
+            MirrorAnim = false;
+            PlayRestPose();
         }
 
         public void RestartAnimation()
@@ -103,12 +119,16 @@ namespace Assets.Script.NyshaRig
             {
                 Editor_StartExercise = false;
                 if (IsExerciseInitialized)
-                    IsAnimPlaying = true;
+
+                    StartExercise(Editor_IsRunningTestAnim);
             }
             if (Editor_PauseExercise)
             { }
             if (Editor_StopExercise)
-            { }
+            {
+                Editor_StopExercise = false;
+                StopAnimation();
+            }
             if (Editor_PrepareExercise)
             {
                 Editor_PrepareExercise = false;
@@ -141,20 +161,24 @@ namespace Assets.Script.NyshaRig
                         IsAnimExercisePreSetup = false;
                         IsExerciseInitialized = true;
                         StopAnimation();
+                        Editor_IsRunningTestAnim = true;
                         if (OnInitializeExerciseEnd != null)
                             OnInitializeExerciseEnd.Invoke(this, new PrepareEventArgs(PrepareStatus.Prepared, Caller.Preview));
                     }
+                    if (!Editor_IsRunningTestAnim)
+                    {
+                        //Editor_IsRunningTestAnim = false;
+                        StopAnimation();
+                    }
 
 
-                }
+                    }
                 else if (exerInfo.TransitionAlpha >= exerInfo.TransitionThreshold && currentTransitionState == eTransitionState.OnRestToExtreme)
                 {
                     Debug.Log("ReachExtreme");
                     exerInfo.TransitionAlpha = 0;
                     totalDeltaTime = 0;
                     currentTransitionState = eTransitionState.OnExtreme;
-
-                   
                 }
 
                 switch (currentTransitionState)
@@ -247,14 +271,12 @@ namespace Assets.Script.NyshaRig
 
             LoadExercise(Editor_ExerciseName);
             IsAnimExercisePreSetup = true;
-            IsAnimPlaying = true;
+            PlayAnimation();
             if (OnInitializeExerciseStart != null)
                 OnInitializeExerciseStart.Invoke(this, new PrepareEventArgs(PrepareStatus.Preparing, Caller.Preview));
-
-
         }
 
-        public void InitializeWebExercise(string s)
+        public void InitializeWebExercise(string jsonString)
         {
             throw new NotImplementedException();
         }
@@ -268,8 +290,12 @@ namespace Assets.Script.NyshaRig
         public void StartExercise(bool isInInstruction)
         {
             //throw new NotImplementedException();
+
             if (IsExerciseInitialized)
+            {
+                Editor_IsRunningTestAnim = isInInstruction;
                 PlayAnimation();
+            }
             else
                 Debug.Log("Exercise not initialized");
         }
@@ -297,6 +323,7 @@ namespace Assets.Script.NyshaRig
         public void StopExercise()
         {
             StopAnimation();
+
             //throw new NotImplementedException();
         }
 
@@ -304,9 +331,9 @@ namespace Assets.Script.NyshaRig
 
         public event EventHandler OnRepetitionEnd;
 
-        public event EventHandler OnSubrepetitionEnd;
+        public event EventHandler OnAnimationEnd;
 
-        public event EventHandler OnRepetitionReallyStart;
+        public event EventHandler OnAnimationStart;
 
         public event EventHandler<PrepareEventArgs> OnInitializeExerciseStart;
 
@@ -315,7 +342,7 @@ namespace Assets.Script.NyshaRig
 
 
         //public event EventArgs OnRest;
-    }
+    } 
 
     public enum eTransitionState
     {

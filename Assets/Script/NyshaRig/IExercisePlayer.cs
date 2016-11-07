@@ -21,8 +21,8 @@ namespace Assets.Script.NyshaRig
 
         event EventHandler<RepetitionStartEventArgs> OnRepetitionStart;
         event EventHandler OnRepetitionEnd;
-        event EventHandler OnSubrepetitionEnd;
-        event EventHandler OnRepetitionReallyStart;
+        event EventHandler OnAnimationEnd;
+        event EventHandler OnAnimationStart;
         event EventHandler<PrepareEventArgs> OnInitializeExerciseStart;
         event EventHandler<PrepareEventArgs> OnInitializeExerciseEnd;
     }
