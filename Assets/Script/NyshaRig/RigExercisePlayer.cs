@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Assets.Script.NyshaRig
 {
-    public class RigExercisePlayer:MonoBehaviour,IExercisePlayer
+    public class RigExercisePlayer : MonoBehaviour, IExercisePlayer
     {
 
         public string Editor_ExerciseName = string.Empty;
@@ -21,14 +21,16 @@ namespace Assets.Script.NyshaRig
         public bool Editor_StartExercise = false;
         public bool Editor_PauseExercise = false;
         public bool Editor_StopExercise = false;
-        public bool Editor_PrepareExercise = false;
+        public bool Editor_PrepareSingleAnimExercise = false;
+        public bool Editor_PrepareMultiAnimExercise = false;
         public bool Editor_GoToRest = false;
         public bool Editor_IsRunningTestAnim = false;
 
 
         private Exercise Legacy_CurrentExercise;
         private RigPose RestPose;
-        private RigAnimation RigAnim;
+        private RigAnimation[] RigAnims;
+        public int CurrentAnimIndex;
 
         private RigSetup Rig;
         private RigPose CurrentPose;
@@ -36,6 +38,8 @@ namespace Assets.Script.NyshaRig
         private eTransitionState currentTransitionState;
 
         public ExerciseInfo exerInfo;
+
+        private Dictionary<Movement, string> AnimsRemap;
         [Space(5)]
 
         public bool AlternateMirroring = true;
@@ -45,15 +49,20 @@ namespace Assets.Script.NyshaRig
         public bool IsExerciseInitialized = false;
         public bool MirrorAnim = false;
 
-        public bool LoadExercise(string name)
+        public bool LoadExercise(string[] names)
         {
-            RigAnim = RigAnimation.LoadFromFile(name);
-            RestPose = RigPose.LoadFromFile(string.Format("rest_{0}", name));
+            RigAnims = new RigAnimation[names.Length];
+            for (int i = 0; i < names.Length; i++)
+            {
+                RigAnims[i] = RigAnimation.LoadFromFile(names[i]);
+            }
+            //RigAnim = RigAnimation.LoadFromFile(name);
+            RestPose = RigPose.LoadFromFile(string.Format("rest_{0}", names[0]));
 
             CurrentPose = RestPose;
             IsExerciseInitialized = false;
 
-            return (RigAnim != null && RestPose != null);
+            return (RigAnims != null && RestPose != null);
         }
 
         public void PlayAnimation()
@@ -107,6 +116,14 @@ namespace Assets.Script.NyshaRig
         {
             Rig = GetComponentInParent<RigSetup>();
             currentTransitionState = eTransitionState.OnWarmUp;
+
+            AnimsRemap = new Dictionary<Movement, string>();
+            AnimsRemap.Add(Movement.EstocadaFrontalLarga, "EstocadaFrontal");
+
+            AnimsRemap.Add(Movement.SubirEscalon_Frontal_SubeDerechaBajaDerecha, "LeftFootUpAnim");
+            AnimsRemap.Add(Movement.SubirEscalon_Frontal_SubeDerechaBajaIzquierda, "RightFootUpAnim");
+            AnimsRemap.Add(Movement.SubirEscalon_Frontal_SubeIzquierdaBajaDerecha, "LeftHandUpAnim");
+            AnimsRemap.Add(Movement.SubirEscalon_Frontal_SubeIzquierdaBajaIzquierda, "RightHandUpAnim");
         }
 
         public void Update()
@@ -114,7 +131,7 @@ namespace Assets.Script.NyshaRig
             if (Editor_LoadExercise)
             {
                 Editor_LoadExercise = false;
-                LoadExercise(Editor_ExerciseName);
+                LoadExercise(new string[] { Editor_ExerciseName });
                 PlayRestPose();
             }
             if (Editor_StartExercise)
@@ -131,10 +148,21 @@ namespace Assets.Script.NyshaRig
                 Editor_StopExercise = false;
                 StopAnimation();
             }
-            if (Editor_PrepareExercise)
+            if (Editor_PrepareSingleAnimExercise)
             {
-                Editor_PrepareExercise = false;
+                Editor_PrepareSingleAnimExercise = false;
                 InitializeExercise(new Exercise(Movement.EstocadaFrontalLarga, Limb.Interleaved), new BehaviourParams(360, 1.1f, 0.9f, 2, 3));
+            }
+            if (Editor_PrepareMultiAnimExercise)
+            {
+                Editor_PrepareMultiAnimExercise = false;
+                List<Movement> exerciseVariations = new List<Movement>();
+                exerciseVariations.Add(Movement.SubirEscalon_Frontal_SubeDerechaBajaDerecha);
+                exerciseVariations.Add(Movement.SubirEscalon_Frontal_SubeDerechaBajaIzquierda);
+                exerciseVariations.Add(Movement.SubirEscalon_Frontal_SubeIzquierdaBajaDerecha);
+                exerciseVariations.Add(Movement.SubirEscalon_Frontal_SubeIzquierdaBajaIzquierda);
+
+                InitializeExercise(new Exercise(Movement.EstocadaFrontalLarga, Limb.None), new BehaviourParams(360, 1.1f, 0.9f, 2, 3,exerciseVariations));
             }
             if (Editor_GoToRest)
             {
@@ -156,6 +184,15 @@ namespace Assets.Script.NyshaRig
                     exerInfo.TransitionAlpha = 0;
                     totalDeltaTime = 0;
                     currentTransitionState = eTransitionState.OnRest;
+
+                    CurrentAnimIndex++;
+                    if (CurrentAnimIndex > RigAnims.Length - 1)
+                    {
+                        CurrentAnimIndex = 0;
+                        if (OnRepetitionEnd != null)
+                            OnRepetitionEnd.Invoke(this, EventArgs.Empty);
+                    }
+
                     if (AlternateMirroring)
                         MirrorAnim = !MirrorAnim;
                     if (IsAnimExercisePreSetup)
@@ -164,6 +201,7 @@ namespace Assets.Script.NyshaRig
                         IsExerciseInitialized = true;
                         StopAnimation();
                         Editor_IsRunningTestAnim = true;
+                        CurrentAnimIndex = 0;
                         if (OnInitializeExerciseEnd != null)
                             OnInitializeExerciseEnd.Invoke(this, new PrepareEventArgs(PrepareStatus.Prepared, Caller.Preview));
                     }
@@ -172,9 +210,12 @@ namespace Assets.Script.NyshaRig
                         //Editor_IsRunningTestAnim = false;
                         StopAnimation();
                     }
+                   
 
 
-                    }
+
+
+                }
                 else if (exerInfo.TransitionAlpha >= exerInfo.TransitionThreshold && currentTransitionState == eTransitionState.OnRestToExtreme)
                 {
                     Debug.Log("ReachExtreme");
@@ -205,12 +246,14 @@ namespace Assets.Script.NyshaRig
                         }
                         break;
                     case eTransitionState.OnRestToExtreme:
+                        if (exerInfo.TransitionAlpha == 0 && OnRepetitionStart != null)
+                            OnRepetitionStart.Invoke(this, new RepetitionStartEventArgs((int)exerInfo.WaitTimeOnRest));
                         totalDeltaTime += Time.deltaTime;
                         exerInfo.TransitionAlpha = totalDeltaTime / exerInfo.TransitionTimeRestToExtreme * exerInfo.SpeedModifier;
                         if (MirrorAnim)
-                            CurrentPose = RigAnim.GetFinalPoseAtAnimPercentage(exerInfo.TransitionAlpha).GetMirroredPose();
+                            CurrentPose = RigAnims[CurrentAnimIndex].GetFinalPoseAtAnimPercentage(exerInfo.TransitionAlpha).GetMirroredPose();
                         else
-                            CurrentPose = RigAnim.GetFinalPoseAtAnimPercentage(exerInfo.TransitionAlpha);
+                            CurrentPose = RigAnims[CurrentAnimIndex].GetFinalPoseAtAnimPercentage(exerInfo.TransitionAlpha);
                         break;
                     case eTransitionState.OnExtreme:
                         //Debug.Log("OnExtreme");
@@ -225,9 +268,9 @@ namespace Assets.Script.NyshaRig
                         totalDeltaTime += Time.deltaTime;
                         exerInfo.TransitionAlpha = (totalDeltaTime / exerInfo.TransitionTimeExtremeToRest * exerInfo.SpeedModifier);
                         if (MirrorAnim)
-                            CurrentPose = RigAnim.GetFinalPoseAtAnimPercentage(1 - exerInfo.TransitionAlpha).GetMirroredPose();
+                            CurrentPose = RigAnims[CurrentAnimIndex].GetFinalPoseAtAnimPercentage(1 - exerInfo.TransitionAlpha).GetMirroredPose();
                         else
-                            CurrentPose = RigAnim.GetFinalPoseAtAnimPercentage(1 - exerInfo.TransitionAlpha);
+                            CurrentPose = RigAnims[CurrentAnimIndex].GetFinalPoseAtAnimPercentage(1 - exerInfo.TransitionAlpha);
                         break;
                     default:
                         break;
@@ -244,6 +287,20 @@ namespace Assets.Script.NyshaRig
             //throw new NotImplementedException();
 
             Editor_ExerciseName = "EstocadaFrontal";
+
+            List<string> exerciseNames = new List<string>();
+            //exerciseNames.Add(e.Movement.ToString());
+            //exerciseNames.Add(Editor_ExerciseName);
+
+            exerciseNames.Add(AnimsRemap[e.Movement]);
+
+            if (param.Variations!=null && param.Variations.Count > 0)
+            {
+                foreach (Movement exerciseVariation in param.Variations)
+                {
+                    exerciseNames.Add(AnimsRemap[exerciseVariation]);
+                }
+            }
             switch (e.Limb)
             {
                 case Limb.Left:
@@ -271,7 +328,7 @@ namespace Assets.Script.NyshaRig
             exerInfo.WaitTimeOnExtreme = param.SecondsInPose;
             exerInfo.WaitTimeOnRest = param.SecondsBetweenRepetitions;
 
-            LoadExercise(Editor_ExerciseName);
+            LoadExercise(exerciseNames.ToArray());
             IsAnimExercisePreSetup = true;
             PlayAnimation();
             if (OnInitializeExerciseStart != null)
@@ -369,7 +426,7 @@ namespace Assets.Script.NyshaRig
 
 
         //public event EventArgs OnRest;
-    } 
+    }
 
     public enum eTransitionState
     {
