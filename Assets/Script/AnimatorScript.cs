@@ -224,8 +224,13 @@ public class AnimatorScript : MonoBehaviour
     float timeSinceStartPrepareWeb;
     public void PrepareExerciseWeb(string s)
     {
+
         RaiseEvent(OnPrepareExerciseStart, PrepareStatus.Preparing);
         PrepareExerciseWebParams pwp = JsonConvert.DeserializeObject<PrepareExerciseWebParams>(s);
+
+        //PrepareExerciseWebParams pwp = new PrepareExerciseWebParams(new Exercise(Movement.EstocadaFrontalCorta,Limb.Left), Caller.Preview);//TEST NO JSON
+        //PrepareExerciseWebParams pwp = JsonUtility.FromJson<PrepareExerciseWebParams>(s);// as PrepareExerciseWebParams;
+        //JsonUtility.FromJson<PlayerInfo>(jsonString);
         Exercise e = (pwp.Exercise) as Exercise;
         this.prepareCaller = (Caller)(pwp.Caller);
 
@@ -315,6 +320,12 @@ public class AnimatorScript : MonoBehaviour
     public void RunExerciseWeb(string s)
     {
         BehaviourParams p = JsonConvert.DeserializeObject<BehaviourParams>(s);
+        //BehaviourParams p = new BehaviourParams();
+        //BehaviourParams p = JsonUtility.FromJson(s, typeof(BehaviourParams)) as BehaviourParams;
+        //BehaviourParams p = JsonUtility.FromJson<BehaviourParams>(s);
+        p.Angle = 90;
+        p.ForwardSpeed = 2f;
+        p.BackwardSpeed = 1.5f;
         behaviour = AnimationBehaviour.GetBehaviour(CurrentExercise.Movement, CurrentExercise.Limb);
 
         behaviour.Stop();

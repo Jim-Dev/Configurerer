@@ -22,7 +22,7 @@ public class WebScript : MonoBehaviour {
 
     void AnimatorScript_OnPrepareExerciseEnd(object sender, PrepareEventArgs e)
     {
-        Application.ExternalCall("AnimationLoadEnd", e.status, e.caller);
+        Application.ExternalCall("CallAnimationLoadEnd", e.status, e.caller);
         this.isLoading = false;
         switch(e.status)
         {
@@ -42,7 +42,7 @@ public class WebScript : MonoBehaviour {
 
     void AnimatorScript_OnPrepareExerciseStart(object sender, PrepareEventArgs e)
     {
-        Application.ExternalCall("AnimationLoadStart", e.caller);
+        Application.ExternalCall("CallAnimationLoadStart", e.caller);
         overlay.gameObject.SetActive(true);
         switch(e.status)
         { 

@@ -72,7 +72,9 @@ namespace Assets.Script.NyshaRig
                 }
                 RigAnim.SaveToFile(RigAnim.AnimationName);
                 //RigAnim.SaveToDisk(RigAnim.AnimationName);
+#if UNITY_EDITOR
                 UnityEditor.AssetDatabase.Refresh();
+#endif
             }
             if (AddFrameToAnim)
             {

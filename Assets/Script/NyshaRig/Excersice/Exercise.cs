@@ -5,7 +5,7 @@ using System.Text;
 
 using System.IO;
 
-using UnityEditor;
+//using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Script.NyshaRig.Excersice

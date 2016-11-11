@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEditor;
+//using UnityEditor;
 
 using Assets.Script;
 
@@ -69,7 +69,9 @@ namespace Assets.Script.NyshaRig
         public void SaveAssetToFile()
         {
             rigPose.SaveToFile(rigPose.PoseName,RigPose.DEFAULT_ASSET_PATH);
+#if UNITY_EDITOR
             UnityEditor.AssetDatabase.Refresh();
+#endif
         }
 
         private void SetPose()
